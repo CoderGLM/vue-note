@@ -21,8 +21,9 @@ export function toNumber (val: string): number | string {
 }
 
 /**
- * Make a map and return a function for checking if a key
- * is in that map.
+ *  根据字符串str创建map
+ * 
+ *  比如：'key1,key2,key3' -> Map {"key1" => true, "key2" => true, "key3" => true}
  */
 export function makeMap (
   str: string,
