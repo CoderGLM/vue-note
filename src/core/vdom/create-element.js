@@ -63,12 +63,15 @@ export function _createElement (
   if (typeof tag === 'string') {
     let Ctor
     ns = config.getTagNamespace(tag)
+    // 如果tag是保留标签（非自定义标签）
     if (config.isReservedTag(tag)) {
       // platform built-in elements
+      // 平台内置元素
       vnode = new VNode(
         config.parsePlatformTagName(tag), data, children,
         undefined, undefined, context
       )
+    // 在context.$options的components中查找tag 
     } else if ((Ctor = resolveAsset(context.$options, 'components', tag))) {
       // component
       vnode = createComponent(Ctor, data, context, children, tag)
@@ -83,9 +86,11 @@ export function _createElement (
     }
   } else {
     // direct component options / constructor
+    // 转为创建组件
     vnode = createComponent(tag, data, context, children)
   }
   if (vnode) {
+    // 将命名空间ns设置到没有命名空间的子元素
     if (ns) applyNS(vnode, ns)
     return vnode
   } else {

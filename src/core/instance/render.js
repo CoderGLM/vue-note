@@ -36,6 +36,10 @@ export function initRender (vm: Component) {
   // so that we get proper render context inside it.
   // args order: tag, data, children, normalizationType, alwaysNormalize
   // internal version is used by render functions compiled from templates
+  // 绑定createElement到此实例
+  // 这样在函数里就能获得正确的渲染上下文
+  // 参数顺序：: tag, data, children, normalizationType, alwaysNormalize
+  // 内部版本用于编译模版时渲染函数调用
   vm._c = (a, b, c, d) => createElement(vm, a, b, c, d, false)
   // normalization is always applied for the public version, used in
   // user-written render functions.

@@ -22,6 +22,7 @@ if (process.env.NODE_ENV !== 'production') {
     )
   }
 
+  // 判断Proxy是否是内置类型
   const hasProxy =
     typeof Proxy !== 'undefined' &&
     Proxy.toString().match(/native code/)

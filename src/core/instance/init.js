@@ -14,34 +14,37 @@ export function initMixin (Vue: Class<Component>) {
     const vm: Component = this
     // a uid
     vm._uid = uid++
-    // a flag to avoid this being observed
+    // 防止此实例被观察
     vm._isVue = true
-    // merge options
-    if (options && options._isComponent) {
+    // 合并options
+    if (options && options._isComponent) { // 如果初始化组件
       // optimize internal component instantiation
       // since dynamic options merging is pretty slow, and none of the
       // internal component options needs special treatment.
       initInternalComponent(vm, options)
-    } else {
+    } else { // 如果是初始化新实例
       vm.$options = mergeOptions(
         resolveConstructorOptions(vm.constructor),
         options || {},
         vm
       )
     }
-    /* istanbul ignore else */
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== 'production') { // 如果不是用于上线
       initProxy(vm)
     } else {
       vm._renderProxy = vm
     }
-    // expose real self
+    // 暴露真实的vm，布吉岛要做啥
     vm._self = vm
+    // 初始化vm.$parent, vm.$root, vm.$refs 等
     initLifecycle(vm)
+    // 初始化vm._events和附加到父亲的事件监听vm.$options._parentListeners
     initEvents(vm)
     callHook(vm, 'beforeCreate')
+    // 初始化vm.$options{ props, methods, data, computed, watch}
     initState(vm)
     callHook(vm, 'created')
+    // 初始化vm.$vnode
     initRender(vm)
   }
 }

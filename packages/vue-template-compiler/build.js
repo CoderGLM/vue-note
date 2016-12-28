@@ -30,8 +30,9 @@ function toNumber (val) {
 }
 
 /**
- * Make a map and return a function for checking if a key
- * is in that map.
+ *  根据字符串str创建map
+ * 
+ *  比如：'key1,key2,key3' -> Map {"key1" => true, "key2" => true, "key3" => true}
  */
 function makeMap (
   str,
@@ -84,10 +85,10 @@ function isPrimitive (value) {
  */
 function cached (fn) {
   var cache = Object.create(null);
-  return function cachedFn (str) {
+  return (function cachedFn (str) {
     var hit = cache[str];
     return hit || (cache[str] = fn(str))
-  }
+  })
 }
 
 /**
@@ -1927,6 +1928,8 @@ function bind$1 (el, dir) {
   };
 }
 
+/*  */
+
 var baseDirectives = {
   bind: bind$1,
   cloak: noop
@@ -2205,23 +2208,25 @@ function genChildren (el, checkSkip) {
   }
 }
 
-// determine the normalzation needed for the children array.
+// determine the normalization needed for the children array.
 // 0: no normalization needed
 // 1: simple normalization needed (possible 1-level deep nested array)
-// 2: full nomralization needed
+// 2: full normalization needed
 function getNormalizationType (children) {
+  var res = 0;
   for (var i = 0; i < children.length; i++) {
     var el = children[i];
     if (needsNormalization(el) ||
         (el.if && el.ifConditions.some(function (c) { return needsNormalization(c.block); }))) {
-      return 2
+      res = 2;
+      break
     }
     if (maybeComponent(el) ||
         (el.if && el.ifConditions.some(function (c) { return maybeComponent(c.block); }))) {
-      return 1
+      res = 1;
     }
   }
-  return 0
+  return res
 }
 
 function needsNormalization (el) {
@@ -2567,8 +2572,11 @@ function genCheckboxModel (
   var falseValueBinding = getBindingAttr(el, 'false-value') || 'false';
   addProp(el, 'checked',
     "Array.isArray(" + value + ")" +
-      "?_i(" + value + "," + valueBinding + ")>-1" +
-      ":_q(" + value + "," + trueValueBinding + ")"
+      "?_i(" + value + "," + valueBinding + ")>-1" + (
+        trueValueBinding === 'true'
+          ? (":(" + value + ")")
+          : (":_q(" + value + "," + trueValueBinding + ")")
+      )
   );
   addHandler(el, 'change',
     "var $$a=" + value + "," +
@@ -2794,6 +2802,7 @@ if (process.env.NODE_ENV !== 'production') {
     );
   };
 
+  // 判断Proxy是否是内置类型
   var hasProxy =
     typeof Proxy !== 'undefined' &&
     Proxy.toString().match(/native code/);
@@ -3192,9 +3201,8 @@ Watcher.prototype.teardown = function teardown () {
   if (this.active) {
     // remove self from vm's watcher list
     // this is a somewhat expensive operation so we skip it
-    // if the vm is being destroyed or is performing a v-for
-    // re-render (the watcher list is then filtered by v-for).
-    if (!this.vm._isBeingDestroyed && !this.vm._vForRemoving) {
+    // if the vm is being destroyed.
+    if (!this.vm._isBeingDestroyed) {
       remove(this.vm._watchers, this);
     }
     var i = this.deps.length;
@@ -3618,6 +3626,14 @@ var computedSharedDefinition = {
 
 function initComputed (vm, computed) {
   for (var key in computed) {
+    /* istanbul ignore if */
+    if (process.env.NODE_ENV !== 'production' && key in vm) {
+      warn(
+        "existing instance property \"" + key + "\" will be " +
+        "overwritten by a computed property with the same name.",
+        vm
+      );
+    }
     var userDef = computed[key];
     if (typeof userDef === 'function') {
       computedSharedDefinition.get = makeComputedGetter(userDef, vm);
@@ -4709,6 +4725,10 @@ function initRender (vm) {
   // so that we get proper render context inside it.
   // args order: tag, data, children, normalizationType, alwaysNormalize
   // internal version is used by render functions compiled from templates
+  // 绑定createElement到此实例
+  // 这样在函数里就能获得正确的渲染上下文
+  // 参数顺序：: tag, data, children, normalizationType, alwaysNormalize
+  // 内部版本用于编译模版时渲染函数调用
   vm._c = function (a, b, c, d) { return createElement(vm, a, b, c, d, false); };
   // normalization is always applied for the public version, used in
   // user-written render functions.
@@ -4993,34 +5013,37 @@ function initMixin (Vue) {
     var vm = this;
     // a uid
     vm._uid = uid++;
-    // a flag to avoid this being observed
+    // 防止此实例被观察
     vm._isVue = true;
-    // merge options
-    if (options && options._isComponent) {
+    // 合并options
+    if (options && options._isComponent) { // 如果初始化组件
       // optimize internal component instantiation
       // since dynamic options merging is pretty slow, and none of the
       // internal component options needs special treatment.
       initInternalComponent(vm, options);
-    } else {
+    } else { // 如果是初始化新实例
       vm.$options = mergeOptions(
         resolveConstructorOptions(vm.constructor),
         options || {},
         vm
       );
     }
-    /* istanbul ignore else */
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== 'production') { // 如果不是用于上线
       initProxy(vm);
     } else {
       vm._renderProxy = vm;
     }
-    // expose real self
+    // 暴露真实的vm，布吉岛要做啥
     vm._self = vm;
+    // 初始化vm.$parent, vm.$root, vm.$refs 等
     initLifecycle(vm);
+    // 初始化vm._events和附加到父亲的事件监听vm.$options._parentListeners
     initEvents(vm);
     callHook(vm, 'beforeCreate');
+    // 初始化vm.$options{ props, methods, data, computed, watch}
     initState(vm);
     callHook(vm, 'created');
+    // 初始化vm.$vnode
     initRender(vm);
   };
 }
@@ -5497,7 +5520,7 @@ function assertProp (
     }
     for (var i = 0; i < type.length && !valid; i++) {
       var assertedType = assertType(value, type[i]);
-      expectedTypes.push(assertedType.expectedType);
+      expectedTypes.push(assertedType.expectedType || '');
       valid = assertedType.valid;
     }
   }

@@ -307,6 +307,9 @@ export function mergeOptions (
  * Resolve an asset.
  * This function is used because child instances need access
  * to assets defined in its ancestor chain.
+ * 解析资源
+ * 因为子实例需要访问定义在原型链的资源
+ *
  */
 export function resolveAsset (
   options: Object,
@@ -315,17 +318,20 @@ export function resolveAsset (
   warnMissing?: boolean
 ): any {
   /* istanbul ignore if */
+  // istanbul这里应该指的是一个测试代码覆盖率的的工具
   if (typeof id !== 'string') {
     return
   }
   const assets = options[type]
   // check local registration variations first
+  // 先在实例的assets中是否有查找的资源，根据id、camelize(id)、capitalize(id)为key查找
   if (hasOwn(assets, id)) return assets[id]
   const camelizedId = camelize(id)
   if (hasOwn(assets, camelizedId)) return assets[camelizedId]
   const PascalCaseId = capitalize(camelizedId)
   if (hasOwn(assets, PascalCaseId)) return assets[PascalCaseId]
   // fallback to prototype chain
+  // 如果实例没有找到，则去原型链查找
   const res = assets[id] || assets[camelizedId] || assets[PascalCaseId]
   if (process.env.NODE_ENV !== 'production' && warnMissing && !res) {
     warn(
