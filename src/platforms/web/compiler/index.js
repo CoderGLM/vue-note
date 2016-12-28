@@ -9,6 +9,7 @@ import directives from './directives/index'
 import { isReservedTag, mustUseProp, getTagNamespace, isPreTag } from '../util/index'
 import { isUnaryTag } from './util'
 
+// 这里是用Object.create(null)取代{}，因为前者生成的对象没有原型，避免了不必要的存储
 const cache: { [key: string]: CompiledFunctionResult } = Object.create(null)
 
 export const baseOptions: CompilerOptions = {
@@ -56,6 +57,9 @@ export function compileToFunctions (
       }
     }
   }
+  // String 比 +"" 效率高
+  // 因为String直接执行的toString
+  // 而 +"" 有可能先调用valueOf，再调用toString
   const key = options && options.delimiters
     ? String(options.delimiters) + template
     : template
@@ -82,11 +86,12 @@ export function compileToFunctions (
   }
   return (cache[key] = res)
 }
-
+// 将字符串代码转化成函数
 function makeFunction (code) {
   try {
     return new Function(code)
   } catch (e) {
+    // noop为function () {}，什么都不执行
     return noop
   }
 }

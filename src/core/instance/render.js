@@ -45,6 +45,8 @@ export function initRender (vm: Component) {
   // user-written render functions.
   vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true)
   if (vm.$options.el) {
+    // @path entries/web-runtime-with-compiler
+    // 
     vm.$mount(vm.$options.el)
   }
 }

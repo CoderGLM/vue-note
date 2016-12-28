@@ -77,6 +77,7 @@ function hasOwn (obj, key) {
 
 /**
  * Check if value is primitive
+ * 检查value是否是原始数据
  */
 function isPrimitive (value) {
   return typeof value === 'string' || typeof value === 'number'
@@ -1181,6 +1182,9 @@ function mergeOptions (
  * Resolve an asset.
  * This function is used because child instances need access
  * to assets defined in its ancestor chain.
+ * 解析资源
+ * 因为子实例需要访问定义在原型链的资源
+ *
  */
 function resolveAsset (
   options,
@@ -1189,17 +1193,20 @@ function resolveAsset (
   warnMissing
 ) {
   /* istanbul ignore if */
+  // istanbul这里应该指的是一个测试代码覆盖率的的工具
   if (typeof id !== 'string') {
     return
   }
   var assets = options[type];
   // check local registration variations first
+  // 先在实例的assets中是否有查找的资源，根据id、camelize(id)、capitalize(id)为key查找
   if (hasOwn(assets, id)) { return assets[id] }
   var camelizedId = camelize(id);
   if (hasOwn(assets, camelizedId)) { return assets[camelizedId] }
   var PascalCaseId = capitalize(camelizedId);
   if (hasOwn(assets, PascalCaseId)) { return assets[PascalCaseId] }
   // fallback to prototype chain
+  // 如果实例没有找到，则去原型链查找
   var res = assets[id] || assets[camelizedId] || assets[PascalCaseId];
   if ("development" !== 'production' && warnMissing && !res) {
     warn(
@@ -2950,6 +2957,7 @@ function createElement (
   normalizationType,
   alwaysNormalize
 ) {
+  // isPrimitive检查是否是字符串或数字
   if (Array.isArray(data) || isPrimitive(data)) {
     normalizationType = children;
     children = data;
@@ -2994,12 +3002,15 @@ function _createElement (
   if (typeof tag === 'string') {
     var Ctor;
     ns = config.getTagNamespace(tag);
+    // 如果tag是保留标签（非自定义标签）
     if (config.isReservedTag(tag)) {
       // platform built-in elements
+      // 平台内置元素
       vnode = new VNode(
         config.parsePlatformTagName(tag), data, children,
         undefined, undefined, context
       );
+    // 在context.$options的components中查找tag 
     } else if ((Ctor = resolveAsset(context.$options, 'components', tag))) {
       // component
       vnode = createComponent(Ctor, data, context, children, tag);
@@ -3014,9 +3025,11 @@ function _createElement (
     }
   } else {
     // direct component options / constructor
+    // 转为创建组件
     vnode = createComponent(tag, data, context, children);
   }
   if (vnode) {
+    // 将命名空间ns设置到没有命名空间的子元素
     if (ns) { applyNS(vnode, ns); }
     return vnode
   } else {

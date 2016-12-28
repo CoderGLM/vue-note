@@ -6,6 +6,9 @@ import { query } from 'web/util/index'
 import { shouldDecodeNewlines } from 'web/util/compat'
 import { compileToFunctions } from 'web/compiler/index'
 
+//
+// 根据id查询elem并缓存
+// @return 对应元素的html
 const idToTemplate = cached(id => {
   const el = query(id)
   return el && el.innerHTML
@@ -16,6 +19,8 @@ Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
 ): Component {
+  debugger;
+  // 如果el存在，则query获取或者创建元素
   el = el && query(el)
 
   /* istanbul ignore if */
@@ -30,7 +35,7 @@ Vue.prototype.$mount = function (
   // resolve template/el and convert to render function
   if (!options.render) {
     let template = options.template
-    if (template) {
+    if (template) { // 如果设置了template
       if (typeof template === 'string') {
         if (template.charAt(0) === '#') {
           template = idToTemplate(template)
@@ -50,7 +55,7 @@ Vue.prototype.$mount = function (
         }
         return this
       }
-    } else if (el) {
+    } else if (el) { // 如果没设置tempalte，并且el有值
       template = getOuterHTML(el)
     }
     if (template) {
