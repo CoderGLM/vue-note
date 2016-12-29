@@ -42,6 +42,9 @@ export class Observer {
     this.vmCount = 0
     def(value, '__ob__', this)
     if (Array.isArray(value)) {
+      // 如果Object有__proto__属性，
+      // 则设置__proto__指向Object.create(Array.prototype),
+      // 否则将Array.prototype中的方法定义到value里
       const augment = hasProto
         ? protoAugment
         : copyAugment
@@ -56,6 +59,9 @@ export class Observer {
    * Walk through each property and convert them into
    * getter/setters. This method should only be called when
    * value type is Object.
+   * 遍历每个属性，将其转化为getter/setters。
+   * 这个方法只有在value是对象时才被调用
+   * 
    */
   walk (obj: Object) {
     const keys = Object.keys(obj)
@@ -150,6 +156,8 @@ export function defineReactive (
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
+      debugger;
+      // 此处的getter为原始getter，只是为了拿到val
       const value = getter ? getter.call(obj) : val
       if (Dep.target) {
         dep.depend()

@@ -19,7 +19,6 @@ Vue.prototype.$mount = function (
   el?: string | Element,
   hydrating?: boolean
 ): Component {
-  debugger;
   // 如果el存在，则query获取或者创建元素
   el = el && query(el)
 

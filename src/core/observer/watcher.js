@@ -168,6 +168,7 @@ export default class Watcher {
         // set new value
         const oldValue = this.value
         this.value = value
+        // 这里if的两种情况都执行了cb，目测是为了提高效率，第一种情况只是多了异常处理
         if (this.user) {
           try {
             this.cb.call(this.vm, value, oldValue)
@@ -205,7 +206,7 @@ export default class Watcher {
   depend () {
     let i = this.deps.length
     while (i--) {
-      this.deps[i].depend()
+      this.deps[i].dep／end()
     }
   }
 

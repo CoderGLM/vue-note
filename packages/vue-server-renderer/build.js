@@ -3301,6 +3301,7 @@ Watcher.prototype.run = function run () {
       // set new value
       var oldValue = this.value;
       this.value = value;
+      // 这里if的两种情况都执行了cb，目测是为了提高效率，第一种情况只是多了异常处理
       if (this.user) {
         try {
           this.cb.call(this.vm, value, oldValue);
@@ -3475,6 +3476,9 @@ var Observer = function Observer (value) {
   this.vmCount = 0;
   def(value, '__ob__', this);
   if (Array.isArray(value)) {
+    // 如果Object有__proto__属性，
+    // 则设置__proto__指向Object.create(Array.prototype),
+    // 否则将Array.prototype中的方法定义到value里
     var augment = hasProto
       ? protoAugment
       : copyAugment;
@@ -3489,6 +3493,9 @@ var Observer = function Observer (value) {
  * Walk through each property and convert them into
  * getter/setters. This method should only be called when
  * value type is Object.
+ * 遍历每个属性，将其转化为getter/setters。
+ * 这个方法只有在value是对象时才被调用
+ * 
  */
 Observer.prototype.walk = function walk (obj) {
   var keys = Object.keys(obj);
@@ -3582,6 +3589,8 @@ function defineReactive$$1 (
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
+      debugger;
+      // 此处的getter为原始getter，只是为了拿到val
       var value = getter ? getter.call(obj) : val;
       if (Dep.target) {
         dep.depend();
@@ -3958,6 +3967,7 @@ function createTextVNode (val) {
 // used for static nodes and slot nodes because they may be reused across
 // multiple renders, cloning them avoids errors when DOM manipulations rely
 // on their elm reference.
+// 优化浅克隆
 function cloneVNode (vnode) {
   var cloned = new VNode(
     vnode.tag,
@@ -4892,6 +4902,8 @@ function initRender (vm$$1) {
   // user-written render functions.
   vm$$1.$createElement = function (a, b, c, d) { return createElement(vm$$1, a, b, c, d, true); };
   if (vm$$1.$options.el) {
+    // @path entries/web-runtime-with-compiler
+    // 
     vm$$1.$mount(vm$$1.$options.el);
   }
 }
@@ -5918,6 +5930,7 @@ var unknownElementCache = Object.create(null);
 
 /*  */
 
+// 这里是用Object.create(null)取代{}，因为前者生成的对象没有原型，避免了不必要的存储
 var cache = Object.create(null);
 
 var baseOptions = {
@@ -5965,6 +5978,9 @@ function compileToFunctions (
       }
     }
   }
+  // String 比 +"" 效率高
+  // 因为String直接执行的toString
+  // 而 +"" 有可能先调用valueOf，再调用toString
   var key = options && options.delimiters
     ? String(options.delimiters) + template
     : template;
@@ -5991,11 +6007,12 @@ function compileToFunctions (
   }
   return (cache[key] = res)
 }
-
+// 将字符串代码转化成函数
 function makeFunction (code) {
   try {
     return new Function(code)
   } catch (e) {
+    // noop为function () {}，什么都不执行
     return noop
   }
 }
