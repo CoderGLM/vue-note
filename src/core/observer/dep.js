@@ -35,6 +35,7 @@ export default class Dep {
 
   notify () {
     // stablize the subscriber list first
+    // 相当于克隆subs
     const subs = this.subs.slice()
     for (let i = 0, l = subs.length; i < l; i++) {
       subs[i].update()

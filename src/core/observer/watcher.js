@@ -165,13 +165,18 @@ export default class Watcher {
         // Deep watchers and watchers on Object/Arrays should fire even
         // when the value is the same, because the value may
         // have mutated.
+        // 深层watcher和对象（或数组）的watcher即使value相同也要触发
+        // 因为value可能已经变了。
         isObject(value) ||
         this.deep
       ) {
         // set new value
         const oldValue = this.value
         this.value = value
-        // 这里if的两种情况都执行了cb，目测是为了提高效率，第一种情况只是多了异常处理
+        //
+        // 执行callback
+        //
+        // 第一种情况只是多了异常处理，第二种情况是裸执行cb
         if (this.user) {
           try {
             this.cb.call(this.vm, value, oldValue)

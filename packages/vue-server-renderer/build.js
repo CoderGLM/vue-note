@@ -3220,7 +3220,9 @@ var Watcher = function Watcher (
  * Evaluate the getter, and re-collect dependencies.
  */
 Watcher.prototype.get = function get () {
+  debugger;
   pushTarget(this);
+  // 取出this.vm[expOrFn]或执行expOrFn
   var value = this.getter.call(this.vm, this.vm);
   // "touch" every property so they are all tracked as
   // dependencies for deep watching
@@ -3375,6 +3377,7 @@ Watcher.prototype.teardown = function teardown () {
  */
 var seenObjects = new _Set();
 function traverse (val) {
+  debugger;
   seenObjects.clear();
   _traverse(val, seenObjects);
 }
@@ -4314,6 +4317,7 @@ function lifecycleMixin (Vue) {
   };
 
   Vue.prototype._update = function (vnode, hydrating) {
+    debugger;
     var vm$$1 = this;
     if (vm$$1._isMounted) {
       callHook(vm$$1, 'beforeUpdate');
@@ -5212,7 +5216,7 @@ function initMixin (Vue) {
     vm$$1._self = vm$$1;
     // 初始化vm.$parent, vm.$root, vm.$refs 等
     initLifecycle(vm$$1);
-    // 初始化vm._events和附加到父亲的事件监听vm.$options._parentListeners
+    // 初始化vm._events和附加到父元素的事件监听vm.$options._parentListeners
     initEvents(vm$$1);
     callHook(vm$$1, 'beforeCreate');
     // 初始化vm.$options{ props, methods, data, computed, watch}
