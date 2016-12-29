@@ -1623,6 +1623,7 @@ function arrInvoker (arr) {
 
 function fnInvoker (o) {
   return function (ev) {
+    debugger;
     var single = arguments.length === 1;
     single ? o.fn(ev) : o.fn.apply(null, arguments);
   }

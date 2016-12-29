@@ -88,7 +88,9 @@ export default class Watcher {
    * Evaluate the getter, and re-collect dependencies.
    */
   get () {
+    debugger;
     pushTarget(this)
+    // 取出this.vm[expOrFn]或执行expOrFn
     const value = this.getter.call(this.vm, this.vm)
     // "touch" every property so they are all tracked as
     // dependencies for deep watching
@@ -155,6 +157,7 @@ export default class Watcher {
    * Will be called by the scheduler.
    */
   run () {
+    debugger;
     if (this.active) {
       const value = this.get()
       if (
@@ -206,7 +209,7 @@ export default class Watcher {
   depend () {
     let i = this.deps.length
     while (i--) {
-      this.deps[i].dep／end()
+      this.deps[i].depend()
     }
   }
 
@@ -237,6 +240,7 @@ export default class Watcher {
  */
 const seenObjects = new Set()
 function traverse (val: any) {
+  debugger;
   seenObjects.clear()
   _traverse(val, seenObjects)
 }

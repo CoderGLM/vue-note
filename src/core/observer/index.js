@@ -156,7 +156,6 @@ export function defineReactive (
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
-      debugger;
       // 此处的getter为原始getter，只是为了拿到val
       const value = getter ? getter.call(obj) : val
       if (Dep.target) {
@@ -171,6 +170,7 @@ export function defineReactive (
       return value
     },
     set: function reactiveSetter (newVal) {
+      debugger;
       const value = getter ? getter.call(obj) : val
       /* eslint-disable no-self-compare */
       if (newVal === value || (newVal !== newVal && value !== value)) {

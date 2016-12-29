@@ -38,7 +38,7 @@ export function initMixin (Vue: Class<Component>) {
     vm._self = vm
     // 初始化vm.$parent, vm.$root, vm.$refs 等
     initLifecycle(vm)
-    // 初始化vm._events和附加到父亲的事件监听vm.$options._parentListeners
+    // 初始化vm._events和附加到父元素的事件监听vm.$options._parentListeners
     initEvents(vm)
     callHook(vm, 'beforeCreate')
     // 初始化vm.$options{ props, methods, data, computed, watch}

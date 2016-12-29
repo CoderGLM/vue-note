@@ -2541,6 +2541,7 @@ function model (
       );
     }
   }
+  debugger;
   if (tag === 'select') {
     genSelect(el, value, modifiers);
   } else if (tag === 'input' && type === 'checkbox') {
@@ -3137,6 +3138,7 @@ Watcher.prototype.update = function update () {
  * Will be called by the scheduler.
  */
 Watcher.prototype.run = function run () {
+  debugger;
   if (this.active) {
     var value = this.get();
     if (
@@ -3438,7 +3440,6 @@ function defineReactive$$1 (
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
-      debugger;
       // 此处的getter为原始getter，只是为了拿到val
       var value = getter ? getter.call(obj) : val;
       if (Dep.target) {
@@ -3453,6 +3454,7 @@ function defineReactive$$1 (
       return value
     },
     set: function reactiveSetter (newVal) {
+      debugger;
       var value = getter ? getter.call(obj) : val;
       /* eslint-disable no-self-compare */
       if (newVal === value || (newVal !== newVal && value !== value)) {
@@ -3912,7 +3914,9 @@ function arrInvoker (arr) {
 }
 
 function fnInvoker (o) {
+  debugger;
   return function (ev) {
+    debugger;
     var single = arguments.length === 1;
     single ? o.fn(ev) : o.fn.apply(null, arguments);
   }
@@ -4145,6 +4149,7 @@ function lifecycleMixin (Vue) {
     }
     callHook(vm, 'beforeMount');
     vm._watcher = new Watcher(vm, function () {
+      debugger;
       vm._update(vm._render(), hydrating);
     }, noop);
     hydrating = false;
