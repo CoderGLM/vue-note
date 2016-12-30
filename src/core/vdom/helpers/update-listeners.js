@@ -9,6 +9,7 @@ export function updateListeners (
   remove: Function,
   vm: Component
 ) {
+  debugger;
   let name, cur, old, fn, event, capture, once
   for (name in on) {
     cur = on[name]

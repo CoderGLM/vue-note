@@ -42,6 +42,7 @@ export default class Watcher {
     cb: Function,
     options?: Object
   ) {
+    console.log('Wather-', expOrFn);
     this.vm = vm
     vm._watchers.push(this)
     // options
@@ -94,6 +95,8 @@ export default class Watcher {
     const value = this.getter.call(this.vm, this.vm)
     // "touch" every property so they are all tracked as
     // dependencies for deep watching
+    // 依次取属性值，这样每个属性都会在getter中调defineReactive，
+    // defineReactive这里面有对依赖的处理
     if (this.deep) {
       traverse(value)
     }
@@ -257,7 +260,9 @@ function _traverse (val: any, seen: Set) {
     return
   }
   if (val.__ob__) {
+    debugger;
     const depId = val.__ob__.dep.id
+    // seen保存的是被观察(observer)的数据的depid
     if (seen.has(depId)) {
       return
     }

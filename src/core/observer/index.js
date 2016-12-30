@@ -110,6 +110,7 @@ function copyAugment (target: Object, src: Object, keys: Array<string>) {
  * or the existing observer if the value already has one.
  */
 export function observe (value: any, asRootData: ?boolean): Observer | void {
+  // ⚠️如果不是对象就不继续了
   if (!isObject(value)) {
     return
   }
@@ -151,14 +152,25 @@ export function defineReactive (
   const getter = property && property.get
   const setter = property && property.set
 
+  // childOb是针对value为对象这种情况的，因为如果val不是对象，在observer
   let childOb = observe(val)
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
+      debugger;
       // 此处的getter为原始getter，只是为了拿到val
       const value = getter ? getter.call(obj) : val
+      // 这里判断是否是在Watcher的get方法里拿该值，
+      // 因为在Watcher的get方法里有`PushTarget(...)`，参数即为Dep.target
       if (Dep.target) {
+        // dep.depend作用是领watcher（即Dep.target）与此dep互相引用
+        // 基本实现：
+        // dep.depend() {
+        //  target.addDep(dep) { 
+        //    dep.addSub(target);
+        //  }
+        // }
         dep.depend()
         if (childOb) {
           childOb.dep.depend()
@@ -186,6 +198,9 @@ export function defineReactive (
         val = newVal
       }
       childOb = observe(newVal)
+      // dep.subs.each(function (sub) {
+      //   sub.update();
+      // })
       dep.notify()
     }
   })

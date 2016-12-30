@@ -3039,6 +3039,7 @@ Dep.prototype.depend = function depend () {
 
 Dep.prototype.notify = function notify () {
   // stablize the subscriber list first
+  // 相当于克隆subs
   var subs = this.subs.slice();
   for (var i = 0, l = subs.length; i < l; i++) {
     subs[i].update();
@@ -3174,6 +3175,7 @@ var Watcher = function Watcher (
   cb,
   options
 ) {
+  console.log('Wather-', expOrFn);
   this.vm = vm$$1;
   vm$$1._watchers.push(this);
   // options
@@ -3226,6 +3228,8 @@ Watcher.prototype.get = function get () {
   var value = this.getter.call(this.vm, this.vm);
   // "touch" every property so they are all tracked as
   // dependencies for deep watching
+  // 依次取属性值，这样每个属性都会在getter中调defineReactive，
+  // defineReactive这里面有对依赖的处理
   if (this.deep) {
     traverse(value);
   }
@@ -3299,13 +3303,18 @@ Watcher.prototype.run = function run () {
       // Deep watchers and watchers on Object/Arrays should fire even
       // when the value is the same, because the value may
       // have mutated.
+      // 深层watcher和对象（或数组）的watcher即使value相同也要触发
+      // 因为value可能已经变了。
       isObject(value) ||
       this.deep
     ) {
       // set new value
       var oldValue = this.value;
       this.value = value;
-      // 这里if的两种情况都执行了cb，目测是为了提高效率，第一种情况只是多了异常处理
+      //
+      // 执行callback
+      //
+      // 第一种情况只是多了异常处理，第二种情况是裸执行cb
       if (this.user) {
         try {
           this.cb.call(this.vm, value, oldValue);
@@ -3389,7 +3398,9 @@ function _traverse (val, seen) {
     return
   }
   if (val.__ob__) {
+    debugger;
     var depId = val.__ob__.dep.id;
+    // seen保存的是被观察(observer)的数据的depid
     if (seen.has(depId)) {
       return
     }
@@ -3548,6 +3559,7 @@ function copyAugment (target, src, keys) {
  * or the existing observer if the value already has one.
  */
 function observe (value, asRootData) {
+  // ⚠️如果不是对象就不继续了
   if (!isObject(value)) {
     return
   }
@@ -3589,14 +3601,25 @@ function defineReactive$$1 (
   var getter = property && property.get;
   var setter = property && property.set;
 
+  // childOb是针对value为对象这种情况的，因为如果val不是对象，在observer
   var childOb = observe(val);
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
+      debugger;
       // 此处的getter为原始getter，只是为了拿到val
       var value = getter ? getter.call(obj) : val;
+      // 这里判断是否是在Watcher的get方法里拿该值，
+      // 因为在Watcher的get方法里有`PushTarget(...)`，参数即为Dep.target
       if (Dep.target) {
+        // dep.depend作用是领watcher（即Dep.target）与此dep互相引用
+        // 基本实现：
+        // dep.depend() {
+        //  target.addDep(dep) { 
+        //    dep.addSub(target);
+        //  }
+        // }
         dep.depend();
         if (childOb) {
           childOb.dep.depend();
@@ -3624,6 +3647,9 @@ function defineReactive$$1 (
         val = newVal;
       }
       childOb = observe(newVal);
+      // dep.subs.each(function (sub) {
+      //   sub.update();
+      // })
       dep.notify();
     }
   });
@@ -4009,6 +4035,7 @@ function updateListeners (
   remove$$1,
   vm$$1
 ) {
+  debugger;
   var name, cur, old, fn, event, capture, once;
   for (name in on) {
     cur = on[name];
