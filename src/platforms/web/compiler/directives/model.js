@@ -24,7 +24,6 @@ export default function model (
       )
     }
   }
-  debugger;
   if (tag === 'select') {
     genSelect(el, value, modifiers)
   } else if (tag === 'input' && type === 'checkbox') {

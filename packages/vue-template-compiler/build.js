@@ -2541,7 +2541,6 @@ function model (
       );
     }
   }
-  debugger;
   if (tag === 'select') {
     genSelect(el, value, modifiers);
   } else if (tag === 'input' && type === 'checkbox') {
@@ -3471,6 +3470,7 @@ function defineReactive$$1 (
         // }
         dep.depend();
         if (childOb) {
+          // 何用
           childOb.dep.depend();
         }
         if (Array.isArray(value)) {
@@ -3656,6 +3656,7 @@ function initData (vm) {
   }
   // observe data
   observe(data, true /* asRootData */);
+  debugger;
 }
 
 var computedSharedDefinition = {
@@ -3735,6 +3736,7 @@ function initWatch (vm, watch) {
 }
 
 function createWatcher (vm, key, handler) {
+  debugger;
   var options;
   if (isPlainObject(handler)) {
     options = handler;

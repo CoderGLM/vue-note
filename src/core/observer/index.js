@@ -173,6 +173,7 @@ export function defineReactive (
         // }
         dep.depend()
         if (childOb) {
+          // 何用
           childOb.dep.depend()
         }
         if (Array.isArray(value)) {

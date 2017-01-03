@@ -1,6 +1,6 @@
 /*!
  * Vue.js v2.1.7
- * (c) 2014-2016 Evan You
+ * (c) 2014-2017 Evan You
  * Released under the MIT License.
  */
 'use strict';
@@ -805,6 +805,7 @@ function defineReactive$$1 (
         // }
         dep.depend();
         if (childOb) {
+          // 何用
           childOb.dep.depend();
         }
         if (Array.isArray(value)) {
@@ -1969,6 +1970,7 @@ function initData (vm) {
   }
   // observe data
   observe(data, true /* asRootData */);
+  debugger;
 }
 
 var computedSharedDefinition = {
@@ -2048,6 +2050,7 @@ function initWatch (vm, watch) {
 }
 
 function createWatcher (vm, key, handler) {
+  debugger;
   var options;
   if (isPlainObject(handler)) {
     options = handler;
@@ -8202,7 +8205,6 @@ function model$1 (
       );
     }
   }
-  debugger;
   if (tag === 'select') {
     genSelect(el, value, modifiers);
   } else if (tag === 'input' && type === 'checkbox') {

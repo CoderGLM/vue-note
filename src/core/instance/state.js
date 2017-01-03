@@ -101,6 +101,7 @@ function initData (vm: Component) {
   }
   // observe data
   observe(data, true /* asRootData */)
+  debugger;
 }
 
 const computedSharedDefinition = {
@@ -180,6 +181,7 @@ function initWatch (vm: Component, watch: Object) {
 }
 
 function createWatcher (vm: Component, key: string, handler: any) {
+  debugger;
   let options
   if (isPlainObject(handler)) {
     options = handler
