@@ -4,9 +4,9 @@
  * Released under the MIT License.
  */
 (function (global, factory) {
-  typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
-  typeof define === 'function' && define.amd ? define(factory) :
-  (global.Vue = factory());
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+    typeof define === 'function' && define.amd ? define(factory) :
+    (global.Vue = factory());
 }(this, (function () { 'use strict';
 
 /*  */
@@ -85,6 +85,8 @@ function isPrimitive (value) {
 
 /**
  * Create a cached version of a pure function.
+ * 生成带缓存的函数
+ * proxy pattern
  */
 function cached (fn) {
   var cache = Object.create(null);
@@ -111,6 +113,7 @@ var capitalize = cached(function (str) {
 
 /**
  * Hyphenate a camelCase string.
+ * 将驼峰命名转化为连字符式
  */
 var hyphenateRE = /([^-])([A-Z])/g;
 var hyphenate = cached(function (str) {
@@ -122,6 +125,8 @@ var hyphenate = cached(function (str) {
 
 /**
  * Simple bind, faster than native
+ * 号称比原生要快，应该是call比apply快吧，
+ * 至于是不是真的快要看浏览器引擎是否有优化了
  */
 function bind$1 (fn, ctx) {
   function boundFn (a) {
@@ -152,6 +157,7 @@ function toArray (list, start) {
 
 /**
  * Mix properties into target object.
+ * 将_from中的所有属性和方法（包括原型链上的）复制到to
  */
 function extend (to, _from) {
   for (var key in _from) {
@@ -560,32 +566,32 @@ var uid$1 = 0;
  * A dep is an observable that can have multiple
  * directives subscribing to it.
  */
-var Dep = function Dep () {
-  this.id = uid$1++;
-  this.subs = [];
+var Dep = function Dep() {
+    this.id = uid$1++;
+        this.subs = [];
 };
 
 Dep.prototype.addSub = function addSub (sub) {
-  this.subs.push(sub);
+    this.subs.push(sub);
 };
 
 Dep.prototype.removeSub = function removeSub (sub) {
-  remove$1(this.subs, sub);
+    remove$1(this.subs, sub);
 };
 
 Dep.prototype.depend = function depend () {
-  if (Dep.target) {
-    Dep.target.addDep(this);
-  }
+    if (Dep.target) {
+        Dep.target.addDep(this);
+    }
 };
 
 Dep.prototype.notify = function notify () {
-  // stablize the subscriber list first
-  // 相当于克隆subs
-  var subs = this.subs.slice();
-  for (var i = 0, l = subs.length; i < l; i++) {
-    subs[i].update();
-  }
+    // stablize the subscriber list first
+    // 相当于克隆subs
+    var subs = this.subs.slice();
+    for (var i = 0, l = subs.length; i < l; i++) {
+        subs[i].update();
+    }
 };
 
 // the current target watcher being evaluated.
@@ -594,14 +600,13 @@ Dep.prototype.notify = function notify () {
 Dep.target = null;
 var targetStack = [];
 
-function pushTarget (_target) {
-  debugger;
-  if (Dep.target) { targetStack.push(Dep.target); }
-  Dep.target = _target;
+function pushTarget(_target) {
+    if (Dep.target) { targetStack.push(Dep.target); }
+    Dep.target = _target;
 }
 
-function popTarget () {
-  Dep.target = targetStack.pop();
+function popTarget() {
+    Dep.target = targetStack.pop();
 }
 
 /*
@@ -1642,108 +1647,111 @@ var uid$2 = 0;
  * and fires callback when the expression value changes.
  * This is used for both the $watch() api and directives.
  */
-var Watcher = function Watcher (
-  vm,
-  expOrFn,
-  cb,
-  options
+var Watcher = function Watcher(
+    vm,
+    expOrFn,
+    cb,
+    options  
 ) {
-  console.log('Wather-', expOrFn);
-  this.vm = vm;
-  vm._watchers.push(this);
-  // options
-  if (options) {
-    this.deep = !!options.deep;
-    this.user = !!options.user;
-    this.lazy = !!options.lazy;
-    this.sync = !!options.sync;
-  } else {
-    this.deep = this.user = this.lazy = this.sync = false;
-  }
-  this.cb = cb;
-  this.id = ++uid$2; // uid for batching
-  this.active = true;
-  this.dirty = this.lazy; // for lazy watchers
-  this.deps = [];
-  this.newDeps = [];
-  this.depIds = new _Set();
-  this.newDepIds = new _Set();
-  this.expression = expOrFn.toString();
-  // parse expression for getter
-  if (typeof expOrFn === 'function') {
-    this.getter = expOrFn;
-  } else {
-    this.getter = parsePath(expOrFn);
-    if (!this.getter) {
-      this.getter = function () {};
-      "development" !== 'production' && warn(
-        "Failed watching path: \"" + expOrFn + "\" " +
-        'Watcher only accepts simple dot-delimited paths. ' +
-        'For full control, use a function instead.',
-        vm
-      );
+    console.log('Wather-', expOrFn);
+    this.vm = vm;
+    vm._watchers.push(this);
+        // options
+    if (options) {
+        this.deep = !!options.deep;
+        this.user = !!options.user;
+        this.lazy = !!options.lazy;
+        this.sync = !!options.sync;
+    } else {
+        this.deep = this.user = this.lazy = this.sync = false;
     }
-  }
-  this.value = this.lazy
-    ? undefined
-    : this.get();
+    this.cb = cb;
+    this.id = ++uid$2; // uid for batching
+    this.active = true;
+    this.dirty = this.lazy; // for lazy watchers
+    this.deps = [];
+    this.newDeps = [];
+    this.depIds = new _Set();
+    this.newDepIds = new _Set();
+    this.expression = expOrFn.toString();
+        // parse expression for getter
+    if (typeof expOrFn === 'function') {
+        this.getter = expOrFn;
+    } else {
+        this.getter = parsePath(expOrFn);
+        if (!this.getter) {
+            this.getter = function() {};
+            "development" !== 'production' && warn(
+                "Failed watching path: \"" + expOrFn + "\" " +
+                'Watcher only accepts simple dot-delimited paths. ' +
+                'For full control, use a function instead.',
+                vm
+            );
+        }
+    }
+    this.value = this.lazy ?
+        undefined :
+        this.get();
 };
 
 /**
  * Evaluate the getter, and re-collect dependencies.
  */
 Watcher.prototype.get = function get () {
-  pushTarget(this);
-  // 取出this.vm[expOrFn]或执行expOrFn
-  // ⚠️如果是vm._watcher，getter在调用的时候会吧vm.data的依赖添加到vm._watcher上
-  var value = this.getter.call(this.vm, this.vm);
-  // "touch" every property so they are all tracked as
-  // dependencies for deep watching
-  // 依次取属性值，这样每个属性都会在getter中调defineReactive，
-  // defineReactive这里面有对依赖的处理
-  if (this.deep) {
-    traverse(value);
-  }
-  popTarget();
-  this.cleanupDeps();
-  return value
+    pushTarget(this);
+        // 取出this.vm[expOrFn]或执行expOrFn
+        //
+        // ⚠️如果该watcher是vm._watcher，那么getter是一个很复杂的更新渲染函数，
+        // 只要在其中被访问的数据有__ob__属性，就会将其依赖添加到vm._watcher.deps
+        // 所以你会发现vm.data中的数据在改变时会更新页面，就是这里搞的鬼
+    var value = this.getter.call(this.vm, this.vm);
+        // "touch" every property so they are all tracked as
+        // dependencies for deep watching
+        // 依次取属性值，这样每个属性都会在getter中调defineReactive，
+        // defineReactive这里面有对依赖的处理
+    if (this.deep) {
+        traverse(value);
+    }
+    popTarget();
+    this.cleanupDeps();
+    return value
 };
 
 /**
  * Add a dependency to this directive.
  */
 Watcher.prototype.addDep = function addDep (dep) {
-  var id = dep.id;
-  if (!this.newDepIds.has(id)) {
-    this.newDepIds.add(id);
-    this.newDeps.push(dep);
-    if (!this.depIds.has(id)) {
-      dep.addSub(this);
+    var id = dep.id;
+    if (!this.newDepIds.has(id)) {
+        this.newDepIds.add(id);
+        this.newDeps.push(dep);
+        if (!this.depIds.has(id)) {
+            dep.addSub(this);
+        }
     }
-  }
 };
 
 /**
  * Clean up for dependency collection.
  */
 Watcher.prototype.cleanupDeps = function cleanupDeps () {
-    var this$1 = this;
+        var this$1 = this;
 
-  var i = this.deps.length;
-  while (i--) {
-    var dep = this$1.deps[i];
-    if (!this$1.newDepIds.has(dep.id)) {
-      dep.removeSub(this$1);
+    var i = this.deps.length;
+    while (i--) {
+        var dep = this$1.deps[i];
+        if (!this$1.newDepIds.has(dep.id)) {
+            dep.removeSub(this$1);
+        }
     }
-  }
-  var tmp = this.depIds;
-  this.depIds = this.newDepIds;
-  this.newDepIds = tmp;
-  this.newDepIds.clear();
-  tmp = this.deps;
-  this.deps = this.newDeps;
-  this.newDeps = tmp;
-  this.newDeps.length = 0;
+    var tmp = this.depIds;
+    this.depIds = this.newDepIds;
+    this.newDepIds = tmp;
+    this.newDepIds.clear();
+    tmp = this.deps;
+    this.deps = this.newDeps;
+    this.newDeps = tmp;
+    this.newDeps.length = 0;
 };
 
 /**
@@ -1751,14 +1759,14 @@ Watcher.prototype.cleanupDeps = function cleanupDeps () {
  * Will be called when a dependency changes.
  */
 Watcher.prototype.update = function update () {
-  /* istanbul ignore else */
-  if (this.lazy) {
-    this.dirty = true;
-  } else if (this.sync) {
-    this.run();
-  } else {
-    queueWatcher(this);
-  }
+    /* istanbul ignore else */
+    if (this.lazy) {
+        this.dirty = true;
+    } else if (this.sync) {
+        this.run();
+    } else {
+            queueWatcher(this);
+    }
 };
 
 /**
@@ -1766,45 +1774,45 @@ Watcher.prototype.update = function update () {
  * Will be called by the scheduler.
  */
 Watcher.prototype.run = function run () {
-  if (this.active) {
-    var value = this.get();
-    if (
-        value !== this.value ||
-      // Deep watchers and watchers on Object/Arrays should fire even
-      // when the value is the same, because the value may
-      // have mutated.
-      // 深层watcher和对象（或数组）的watcher即使value相同也要触发
-      // 因为value可能已经变了。
-      isObject(value) ||
-      this.deep
-    ) {
-      // set new value
-      var oldValue = this.value;
-      this.value = value;
-      //
-      // 执行callback
-      //
-      // 第一种情况只是多了异常处理，第二种情况是裸执行cb
-      if (this.user) {
-        try {
-          this.cb.call(this.vm, value, oldValue);
-        } catch (e) {
-          /* istanbul ignore else */
-          if (config.errorHandler) {
-            config.errorHandler.call(null, e, this.vm);
-          } else {
-            "development" !== 'production' && warn(
-              ("Error in watcher \"" + (this.expression) + "\""),
-              this.vm
-            );
-            throw e
-          }
+    if (this.active) {
+        var value = this.get();
+        if (
+            value !== this.value ||
+            // Deep watchers and watchers on Object/Arrays should fire even
+            // when the value is the same, because the value may
+            // have mutated.
+            // 深层watcher和对象（或数组）的watcher即使value相同也要触发
+            // 因为value可能已经变了。
+            isObject(value) ||
+            this.deep
+        ) {
+            // set new value
+            var oldValue = this.value;
+            this.value = value;
+                //
+                // 执行callback
+                //
+                // 第一种情况只是多了异常处理，第二种情况是裸执行cb
+            if (this.user) {
+                try {
+                    this.cb.call(this.vm, value, oldValue);
+                } catch (e) {
+                    /* istanbul ignore else */
+                    if (config.errorHandler) {
+                        config.errorHandler.call(null, e, this.vm);
+                    } else {
+                        "development" !== 'production' && warn(
+                            ("Error in watcher \"" + (this.expression) + "\""),
+                            this.vm
+                        );
+                        throw e
+                    }
+                }
+            } else {
+                this.cb.call(this.vm, value, oldValue);
+            }
         }
-      } else {
-        this.cb.call(this.vm, value, oldValue);
-      }
     }
-  }
 };
 
 /**
@@ -1812,41 +1820,41 @@ Watcher.prototype.run = function run () {
  * This only gets called for lazy watchers.
  */
 Watcher.prototype.evaluate = function evaluate () {
-  this.value = this.get();
-  this.dirty = false;
+    this.value = this.get();
+    this.dirty = false;
 };
 
 /**
  * Depend on all deps collected by this watcher.
  */
 Watcher.prototype.depend = function depend () {
-    var this$1 = this;
+        var this$1 = this;
 
-  var i = this.deps.length;
-  while (i--) {
-    this$1.deps[i].depend();
-  }
+    var i = this.deps.length;
+    while (i--) {
+        this$1.deps[i].depend();
+    }
 };
 
 /**
  * Remove self from all dependencies' subscriber list.
  */
 Watcher.prototype.teardown = function teardown () {
-    var this$1 = this;
+        var this$1 = this;
 
-  if (this.active) {
-    // remove self from vm's watcher list
-    // this is a somewhat expensive operation so we skip it
-    // if the vm is being destroyed.
-    if (!this.vm._isBeingDestroyed) {
-      remove$1(this.vm._watchers, this);
+    if (this.active) {
+        // remove self from vm's watcher list
+        // this is a somewhat expensive operation so we skip it
+        // if the vm is being destroyed.
+        if (!this.vm._isBeingDestroyed) {
+            remove$1(this.vm._watchers, this);
+        }
+        var i = this.deps.length;
+        while (i--) {
+            this$1.deps[i].removeSub(this$1);
+        }
+        this.active = false;
     }
-    var i = this.deps.length;
-    while (i--) {
-      this$1.deps[i].removeSub(this$1);
-    }
-    this.active = false;
-  }
 };
 
 /**
@@ -1855,34 +1863,34 @@ Watcher.prototype.teardown = function teardown () {
  * is collected as a "deep" dependency.
  */
 var seenObjects = new _Set();
-function traverse (val) {
-  debugger;
-  seenObjects.clear();
-  _traverse(val, seenObjects);
+
+function traverse(val) {
+    seenObjects.clear();
+    _traverse(val, seenObjects);
 }
 
-function _traverse (val, seen) {
-  var i, keys;
-  var isA = Array.isArray(val);
-  if ((!isA && !isObject(val)) || !Object.isExtensible(val)) {
-    return
-  }
-  if (val.__ob__) {
-    var depId = val.__ob__.dep.id;
-    // seen保存的是被观察(observer)的数据的depid
-    if (seen.has(depId)) {
-      return
+function _traverse(val, seen) {
+    var i, keys;
+    var isA = Array.isArray(val);
+    if ((!isA && !isObject(val)) || !Object.isExtensible(val)) {
+        return
     }
-    seen.add(depId);
-  }
-  if (isA) {
-    i = val.length;
-    while (i--) { _traverse(val[i], seen); }
-  } else {
-    keys = Object.keys(val);
-    i = keys.length;
-    while (i--) { _traverse(val[keys[i]], seen); }
-  }
+    if (val.__ob__) {
+        var depId = val.__ob__.dep.id;
+            // seen保存的是被观察(observer)的数据的depid
+        if (seen.has(depId)) {
+            return
+        }
+        seen.add(depId);
+    }
+    if (isA) {
+        i = val.length;
+        while (i--) { _traverse(val[i], seen); }
+    } else {
+        keys = Object.keys(val);
+        i = keys.length;
+        while (i--) { _traverse(val[keys[i]], seen); }
+    }
 }
 
 /*  */

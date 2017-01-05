@@ -10,37 +10,37 @@ let uid = 0
  * directives subscribing to it.
  */
 export default class Dep {
-  static target: ?Watcher;
-  id: number;
-  subs: Array<Watcher>;
+    static target: ? Watcher;
+    id: number;
+    subs: Array < Watcher > ;
 
-  constructor () {
-    this.id = uid++
-    this.subs = []
-  }
-
-  addSub (sub: Watcher) {
-    this.subs.push(sub)
-  }
-
-  removeSub (sub: Watcher) {
-    remove(this.subs, sub)
-  }
-
-  depend () {
-    if (Dep.target) {
-      Dep.target.addDep(this)
+    constructor() {
+        this.id = uid++
+            this.subs = []
     }
-  }
 
-  notify () {
-    // stablize the subscriber list first
-    // 相当于克隆subs
-    const subs = this.subs.slice()
-    for (let i = 0, l = subs.length; i < l; i++) {
-      subs[i].update()
+    addSub(sub: Watcher) {
+        this.subs.push(sub)
     }
-  }
+
+    removeSub(sub: Watcher) {
+        remove(this.subs, sub)
+    }
+
+    depend() {
+        if (Dep.target) {
+            Dep.target.addDep(this)
+        }
+    }
+
+    notify() {
+        // stablize the subscriber list first
+        // 相当于克隆subs
+        const subs = this.subs.slice()
+        for (let i = 0, l = subs.length; i < l; i++) {
+            subs[i].update()
+        }
+    }
 }
 
 // the current target watcher being evaluated.
@@ -49,12 +49,11 @@ export default class Dep {
 Dep.target = null
 const targetStack = []
 
-export function pushTarget (_target: Watcher) {
-  debugger;
-  if (Dep.target) targetStack.push(Dep.target)
-  Dep.target = _target
+export function pushTarget(_target: Watcher) {
+    if (Dep.target) targetStack.push(Dep.target)
+    Dep.target = _target
 }
 
-export function popTarget () {
-  Dep.target = targetStack.pop()
+export function popTarget() {
+    Dep.target = targetStack.pop()
 }
