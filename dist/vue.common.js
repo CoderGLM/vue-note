@@ -815,7 +815,6 @@ function defineReactive$$1 (
       return value
     },
     set: function reactiveSetter (newVal) {
-      debugger;
       var value = getter ? getter.call(obj) : val;
       /* eslint-disable no-self-compare */
       if (newVal === value || (newVal !== newVal && value !== value)) {
@@ -1692,7 +1691,6 @@ var Watcher = function Watcher (
  * Evaluate the getter, and re-collect dependencies.
  */
 Watcher.prototype.get = function get () {
-  debugger;
   pushTarget(this);
   // 取出this.vm[expOrFn]或执行expOrFn
   var value = this.getter.call(this.vm, this.vm);
@@ -1700,6 +1698,7 @@ Watcher.prototype.get = function get () {
   // dependencies for deep watching
   // 依次取属性值，这样每个属性都会在getter中调defineReactive，
   // defineReactive这里面有对依赖的处理
+  debugger;
   if (this.deep) {
     traverse(value);
   }
@@ -1765,7 +1764,6 @@ Watcher.prototype.update = function update () {
  * Will be called by the scheduler.
  */
 Watcher.prototype.run = function run () {
-  debugger;
   if (this.active) {
     var value = this.get();
     if (
@@ -1868,7 +1866,6 @@ function _traverse (val, seen) {
     return
   }
   if (val.__ob__) {
-    debugger;
     var depId = val.__ob__.dep.id;
     // seen保存的是被观察(observer)的数据的depid
     if (seen.has(depId)) {
@@ -1970,7 +1967,6 @@ function initData (vm) {
   }
   // observe data
   observe(data, true /* asRootData */);
-  debugger;
 }
 
 var computedSharedDefinition = {
@@ -2050,7 +2046,6 @@ function initWatch (vm, watch) {
 }
 
 function createWatcher (vm, key, handler) {
-  debugger;
   var options;
   if (isPlainObject(handler)) {
     options = handler;
@@ -2217,7 +2212,6 @@ function updateListeners (
   remove$$1,
   vm
 ) {
-  debugger;
   var name, cur, old, fn, event, capture, once;
   for (name in on) {
     cur = on[name];
@@ -2277,7 +2271,6 @@ function arrInvoker (arr) {
 }
 
 function fnInvoker (o) {
-  debugger;
   return function (ev) {
     debugger;
     var single = arguments.length === 1;
@@ -2515,6 +2508,7 @@ function lifecycleMixin (Vue) {
       }
     }
     callHook(vm, 'beforeMount');
+    debugger;
     vm._watcher = new Watcher(vm, function () {
       debugger;
       vm._update(vm._render(), hydrating);
@@ -2530,7 +2524,6 @@ function lifecycleMixin (Vue) {
   };
 
   Vue.prototype._update = function (vnode, hydrating) {
-    debugger;
     var vm = this;
     if (vm._isMounted) {
       callHook(vm, 'beforeUpdate');

@@ -61,6 +61,7 @@ export function lifecycleMixin (Vue: Class<Component>) {
       }
     }
     callHook(vm, 'beforeMount')
+    debugger;
     vm._watcher = new Watcher(vm, () => {
       debugger;
       vm._update(vm._render(), hydrating)
@@ -76,7 +77,6 @@ export function lifecycleMixin (Vue: Class<Component>) {
   }
 
   Vue.prototype._update = function (vnode: VNode, hydrating?: boolean) {
-    debugger;
     const vm: Component = this
     if (vm._isMounted) {
       callHook(vm, 'beforeUpdate')

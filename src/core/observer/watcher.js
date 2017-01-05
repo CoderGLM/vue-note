@@ -89,14 +89,15 @@ export default class Watcher {
    * Evaluate the getter, and re-collect dependencies.
    */
   get () {
-    debugger;
     pushTarget(this)
     // 取出this.vm[expOrFn]或执行expOrFn
+    // ⚠️如果是vm._watcher，getter在调用的时候会吧vm.data的依赖添加到vm._watcher上
     const value = this.getter.call(this.vm, this.vm)
     // "touch" every property so they are all tracked as
     // dependencies for deep watching
     // 依次取属性值，这样每个属性都会在getter中调defineReactive，
     // defineReactive这里面有对依赖的处理
+    debugger;
     if (this.deep) {
       traverse(value)
     }
@@ -160,7 +161,6 @@ export default class Watcher {
    * Will be called by the scheduler.
    */
   run () {
-    debugger;
     if (this.active) {
       const value = this.get()
       if (
@@ -260,7 +260,6 @@ function _traverse (val: any, seen: Set) {
     return
   }
   if (val.__ob__) {
-    debugger;
     const depId = val.__ob__.dep.id
     // seen保存的是被观察(observer)的数据的depid
     if (seen.has(depId)) {

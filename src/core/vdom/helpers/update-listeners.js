@@ -9,7 +9,6 @@ export function updateListeners (
   remove: Function,
   vm: Component
 ) {
-  debugger;
   let name, cur, old, fn, event, capture, once
   for (name in on) {
     cur = on[name]
@@ -67,7 +66,6 @@ function arrInvoker (arr: Array<Function>): Function {
 }
 
 function fnInvoker (o: { fn: Function }): Function {
-  debugger;
   return function (ev) {
     debugger;
     const single = arguments.length === 1
