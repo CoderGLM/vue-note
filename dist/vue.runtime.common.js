@@ -591,6 +591,7 @@ Dep.target = null;
 var targetStack = [];
 
 function pushTarget (_target) {
+  debugger;
   if (Dep.target) { targetStack.push(Dep.target); }
   Dep.target = _target;
 }
@@ -3154,6 +3155,9 @@ function renderMixin (Vue) {
     // render self
     var vnode;
     try {
+      // 此处render为codegen生成的函数,执行完render后vm._watcher就会出现deps,到底是哪儿绑定的呢？
+      // 肯定是render里了, 跟代码去看看
+      debugger;
       vnode = render.call(vm._renderProxy, vm.$createElement);
     } catch (e) {
       /* istanbul ignore else */
@@ -3254,6 +3258,7 @@ function renderMixin (Vue) {
     val,
     render
   ) {
+    debugger;
     var ret, i, l, keys, key;
     if (Array.isArray(val) || typeof val === 'string') {
       ret = new Array(val.length);

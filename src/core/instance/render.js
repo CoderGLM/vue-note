@@ -84,6 +84,9 @@ export function renderMixin (Vue: Class<Component>) {
     // render self
     let vnode
     try {
+      // 此处render为codegen生成的函数,执行完render后vm._watcher就会出现deps,到底是哪儿绑定的呢？
+      // 肯定是render里了, 跟代码去看看
+      debugger;
       vnode = render.call(vm._renderProxy, vm.$createElement)
     } catch (e) {
       /* istanbul ignore else */
@@ -184,6 +187,7 @@ export function renderMixin (Vue: Class<Component>) {
     val: any,
     render: () => VNode
   ): ?Array<VNode> {
+    debugger;
     let ret: ?Array<VNode>, i, l, keys, key
     if (Array.isArray(val) || typeof val === 'string') {
       ret = new Array(val.length)

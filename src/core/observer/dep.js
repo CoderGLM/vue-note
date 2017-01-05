@@ -50,6 +50,7 @@ Dep.target = null
 const targetStack = []
 
 export function pushTarget (_target: Watcher) {
+  debugger;
   if (Dep.target) targetStack.push(Dep.target)
   Dep.target = _target
 }

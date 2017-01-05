@@ -1204,7 +1204,6 @@ function parse (
   platformGetTagNamespace = options.getTagNamespace || no;
   platformMustUseProp = options.mustUseProp || no;
   platformIsPreTag = options.isPreTag || no;
-  // pluckModuleFunction: 取出每个modules中key的value，返回拼成的数组
   preTransforms = pluckModuleFunction(options.modules, 'preTransformNode');
   transforms = pluckModuleFunction(options.modules, 'transformNode');
   postTransforms = pluckModuleFunction(options.modules, 'postTransformNode');
@@ -1843,6 +1842,8 @@ function isDirectChildOfTemplateFor (node) {
 
 /*  */
 
+/* 用于生成代码字符串，目前我看到的是生成render代码 */
+
 var fnExpRE = /^\s*([\w$_]+|\([^)]*?\))\s*=>|^function\s*\(/;
 var simplePathRE = /^\s*[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\['.*?']|\[".*?"]|\[\d+]|\[[A-Za-z_$][\w$]*])*\s*$/;
 
@@ -1938,6 +1939,9 @@ var baseDirectives = {
 };
 
 /*  */
+
+/* codegen用于生成代码字符串，目前我看到的是生成render代码 */
+/* 调用的奇怪代码(_m, _l等)在src/core/instance/render.js中 */
 
 // configurable state
 var warn$2;
@@ -2902,6 +2906,7 @@ Dep.target = null;
 var targetStack = [];
 
 function pushTarget (_target) {
+  debugger;
   if (Dep.target) { targetStack.push(Dep.target); }
   Dep.target = _target;
 }
@@ -4820,6 +4825,9 @@ function renderMixin (Vue) {
     // render self
     var vnode;
     try {
+      // 此处render为codegen生成的函数,执行完render后vm._watcher就会出现deps,到底是哪儿绑定的呢？
+      // 肯定是render里了, 跟代码去看看
+      debugger;
       vnode = render.call(vm._renderProxy, vm.$createElement);
     } catch (e) {
       /* istanbul ignore else */
@@ -4920,6 +4928,7 @@ function renderMixin (Vue) {
     val,
     render
   ) {
+    debugger;
     var ret, i, l, keys, key;
     if (Array.isArray(val) || typeof val === 'string') {
       ret = new Array(val.length);

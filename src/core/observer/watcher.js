@@ -91,7 +91,10 @@ export default class Watcher {
   get () {
     pushTarget(this)
     // 取出this.vm[expOrFn]或执行expOrFn
-    // ⚠️如果是vm._watcher，getter在调用的时候会吧vm.data的依赖添加到vm._watcher上
+    //
+    // ⚠️如果该watcher是vm._watcher，那么getter是一个很复杂的更新渲染函数，
+    // 只要在其中被访问的数据有__ob__属性，就会将其依赖添加到vm._watcher.deps
+    // 所以你会发现vm.data中的数据在改变时会更新页面，就是这里搞的鬼
     const value = this.getter.call(this.vm, this.vm)
     // "touch" every property so they are all tracked as
     // dependencies for deep watching
