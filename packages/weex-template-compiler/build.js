@@ -3824,11 +3824,13 @@ function baseWarn (msg) {
   console.error(("[Vue parser]: " + msg));
 }
 
+// 取出每个modules中key的value，返回数组
 function pluckModuleFunction (
   modules,
   key
 ) {
   return modules
+    // filter是做什么的？
     ? modules.map(function (m) { return m[key]; }).filter(function (_) { return _; })
     : []
 }

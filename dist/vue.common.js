@@ -790,7 +790,6 @@ function defineReactive$$1 (
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
-      debugger;
       // 此处的getter为原始getter，只是为了拿到val
       var value = getter ? getter.call(obj) : val;
       // 这里判断是否是在Watcher的get方法里拿该值，
@@ -1693,12 +1692,12 @@ var Watcher = function Watcher (
 Watcher.prototype.get = function get () {
   pushTarget(this);
   // 取出this.vm[expOrFn]或执行expOrFn
+  // ⚠️如果是vm._watcher，getter在调用的时候会吧vm.data的依赖添加到vm._watcher上
   var value = this.getter.call(this.vm, this.vm);
   // "touch" every property so they are all tracked as
   // dependencies for deep watching
   // 依次取属性值，这样每个属性都会在getter中调defineReactive，
   // defineReactive这里面有对依赖的处理
-  debugger;
   if (this.deep) {
     traverse(value);
   }
@@ -1767,7 +1766,7 @@ Watcher.prototype.run = function run () {
   if (this.active) {
     var value = this.get();
     if (
-      value !== this.value ||
+        value !== this.value ||
       // Deep watchers and watchers on Object/Arrays should fire even
       // when the value is the same, because the value may
       // have mutated.
@@ -6161,6 +6160,7 @@ Vue$3.prototype.$mount = function (
   el,
   hydrating
 ) {
+  debugger;
   el = el && inBrowser ? query(el) : undefined;
   return this._mount(el, hydrating)
 };
@@ -8448,9 +8448,12 @@ function compileToFunctions (
       }
     }
   }
+  // 理性判断：
   // String 比 +"" 效率高
   // 因为String直接执行的toString
   // 而 +"" 有可能先调用valueOf，再调用toString
+  // ⚠️但是，浏览器引擎是否对+优化就不知道了
+  debugger;
   var key = options && options.delimiters
     ? String(options.delimiters) + template
     : template;
@@ -8502,6 +8505,7 @@ Vue$3.prototype.$mount = function (
   el,
   hydrating
 ) {
+  debugger;
   // 如果el存在，则query获取或者创建元素
   el = el && query(el);
 
@@ -8541,6 +8545,7 @@ Vue$3.prototype.$mount = function (
       template = getOuterHTML(el);
     }
     if (template) {
+      debugger;
       var ref = compileToFunctions(template, {
         warn: warn,
         shouldDecodeNewlines: shouldDecodeNewlines,

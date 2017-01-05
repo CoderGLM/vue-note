@@ -97,7 +97,6 @@ export default class Watcher {
     // dependencies for deep watching
     // 依次取属性值，这样每个属性都会在getter中调defineReactive，
     // defineReactive这里面有对依赖的处理
-    debugger;
     if (this.deep) {
       traverse(value)
     }

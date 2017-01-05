@@ -1,5 +1,8 @@
 /* @flow */
 
+/* codegen用于生成代码字符串，目前我看到的是生成render代码 */
+/* 调用的奇怪代码(_m, _l等)在src/core/instance/render.js中 */
+
 import { genHandlers } from './events'
 import { baseWarn, pluckModuleFunction } from '../helpers'
 import baseDirectives from '../directives/index'

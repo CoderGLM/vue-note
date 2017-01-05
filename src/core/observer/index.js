@@ -158,7 +158,6 @@ export function defineReactive (
     enumerable: true,
     configurable: true,
     get: function reactiveGetter () {
-      debugger;
       // 此处的getter为原始getter，只是为了拿到val
       const value = getter ? getter.call(obj) : val
       // 这里判断是否是在Watcher的get方法里拿该值，

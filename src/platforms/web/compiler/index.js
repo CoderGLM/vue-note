@@ -57,9 +57,12 @@ export function compileToFunctions (
       }
     }
   }
+  // 理性判断：
   // String 比 +"" 效率高
   // 因为String直接执行的toString
   // 而 +"" 有可能先调用valueOf，再调用toString
+  // ⚠️但是，浏览器引擎是否对+优化就不知道了
+  debugger;
   const key = options && options.delimiters
     ? String(options.delimiters) + template
     : template
