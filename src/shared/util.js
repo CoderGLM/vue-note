@@ -74,6 +74,8 @@ export function isPrimitive (value: any): boolean {
 
 /**
  * Create a cached version of a pure function.
+ * 生成带缓存的函数
+ * proxy pattern
  */
 export function cached<F: Function> (fn: F): F {
   const cache = Object.create(null)
@@ -100,6 +102,7 @@ export const capitalize = cached((str: string): string => {
 
 /**
  * Hyphenate a camelCase string.
+ * 将驼峰命名转化为连字符式
  */
 const hyphenateRE = /([^-])([A-Z])/g
 export const hyphenate = cached((str: string): string => {
@@ -111,6 +114,8 @@ export const hyphenate = cached((str: string): string => {
 
 /**
  * Simple bind, faster than native
+ * 号称比原生要快，应该是call比apply快吧，
+ * 至于是不是真的快要看浏览器引擎是否有优化了
  */
 export function bind (fn: Function, ctx: Object): Function {
   function boundFn (a) {
@@ -141,6 +146,7 @@ export function toArray (list: any, start?: number): Array<any> {
 
 /**
  * Mix properties into target object.
+ * 将_from中的所有属性和方法（包括原型链上的）复制到to
  */
 export function extend (to: Object, _from: ?Object): Object {
   for (const key in _from) {
