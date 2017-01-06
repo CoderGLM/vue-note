@@ -46,7 +46,8 @@ export function initRender (vm: Component) {
   vm.$createElement = (a, b, c, d) => createElement(vm, a, b, c, d, true)
   if (vm.$options.el) {
     // @path entries/web-runtime-with-compiler
-    // 
+    //
+    // 此处的$mount在src/entries/web-runtime－with-compiler.js中定义 
     vm.$mount(vm.$options.el)
   }
 }
@@ -84,9 +85,8 @@ export function renderMixin (Vue: Class<Component>) {
     // render self
     let vnode
     try {
-      // 此处render为codegen生成的函数,执行完render后vm._watcher就会出现deps,到底是哪儿绑定的呢？
-      // 肯定是render里了, 跟代码去看看
-      debugger;
+      // 此处render为codegen生成的函数,执行完render后vm._watcher的deps就会有值
+      debugger
       vnode = render.call(vm._renderProxy, vm.$createElement)
     } catch (e) {
       /* istanbul ignore else */
