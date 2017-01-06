@@ -14,7 +14,7 @@ const idToTemplate = cached(id => {
   return el && el.innerHTML
 })
 
-// 此处的mount在src/entries/web-runtime-with-compiler.js中定义
+// 此处的mount在src/entries/web-runtime.js中定义
 const mount = Vue.prototype.$mount
 Vue.prototype.$mount = function (
   el?: string | Element,
@@ -61,6 +61,7 @@ Vue.prototype.$mount = function (
     }
     if (template) {
       debugger;
+      // src/platforms/web/compiler/index.js-->compileToFunctions
       const { render, staticRenderFns } = compileToFunctions(template, {
         warn,
         shouldDecodeNewlines,

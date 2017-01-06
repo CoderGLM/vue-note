@@ -928,109 +928,109 @@ var strats = config.optionMergeStrategies;
  * Options with restrictions
  */
 {
-  strats.el = strats.propsData = function (parent, child, vm, key) {
-    if (!vm) {
-      warn(
-        "option \"" + key + "\" can only be used during instance " +
-        'creation with the `new` keyword.'
-      );
-    }
-    return defaultStrat(parent, child)
-  };
+    strats.el = strats.propsData = function(parent, child, vm, key) {
+        if (!vm) {
+            warn(
+                "option \"" + key + "\" can only be used during instance " +
+                'creation with the `new` keyword.'
+            );
+        }
+        return defaultStrat(parent, child)
+    };
 }
 
 /**
  * Helper that recursively merges two data objects together.
  */
-function mergeData (to, from) {
-  if (!from) { return to }
-  var key, toVal, fromVal;
-  var keys = Object.keys(from);
-  for (var i = 0; i < keys.length; i++) {
-    key = keys[i];
-    toVal = to[key];
-    fromVal = from[key];
-    if (!hasOwn(to, key)) {
-      set$1(to, key, fromVal);
-    } else if (isPlainObject(toVal) && isPlainObject(fromVal)) {
-      mergeData(toVal, fromVal);
+function mergeData(to, from) {
+    if (!from) { return to }
+    var key, toVal, fromVal;
+    var keys = Object.keys(from);
+    for (var i = 0; i < keys.length; i++) {
+        key = keys[i];
+        toVal = to[key];
+        fromVal = from[key];
+        if (!hasOwn(to, key)) {
+            set$1(to, key, fromVal);
+        } else if (isPlainObject(toVal) && isPlainObject(fromVal)) {
+            mergeData(toVal, fromVal);
+        }
     }
-  }
-  return to
+    return to
 }
 
 /**
  * Data
  */
-strats.data = function (
-  parentVal,
-  childVal,
-  vm
+strats.data = function(
+    parentVal,
+    childVal,
+    vm  
 ) {
-  if (!vm) {
-    // in a Vue.extend merge, both should be functions
-    if (!childVal) {
-      return parentVal
+    if (!vm) {
+        // in a Vue.extend merge, both should be functions
+        if (!childVal) {
+            return parentVal
+        }
+        if (typeof childVal !== 'function') {
+            "development" !== 'production' && warn(
+                'The "data" option should be a function ' +
+                'that returns a per-instance value in component ' +
+                'definitions.',
+                vm
+            );
+            return parentVal
+        }
+        if (!parentVal) {
+            return childVal
+        }
+        // when parentVal & childVal are both present,
+        // we need to return a function that returns the
+        // merged result of both functions... no need to
+        // check if parentVal is a function here because
+        // it has to be a function to pass previous merges.
+        return function mergedDataFn() {
+            return mergeData(
+                childVal.call(this),
+                parentVal.call(this)
+            )
+        }
+    } else if (parentVal || childVal) {
+        return function mergedInstanceDataFn() {
+            // instance merge
+            var instanceData = typeof childVal === 'function' ?
+                childVal.call(vm) :
+                childVal;
+            var defaultData = typeof parentVal === 'function' ?
+                parentVal.call(vm) :
+                undefined;
+            if (instanceData) {
+                return mergeData(instanceData, defaultData)
+            } else {
+                return defaultData
+            }
+        }
     }
-    if (typeof childVal !== 'function') {
-      "development" !== 'production' && warn(
-        'The "data" option should be a function ' +
-        'that returns a per-instance value in component ' +
-        'definitions.',
-        vm
-      );
-      return parentVal
-    }
-    if (!parentVal) {
-      return childVal
-    }
-    // when parentVal & childVal are both present,
-    // we need to return a function that returns the
-    // merged result of both functions... no need to
-    // check if parentVal is a function here because
-    // it has to be a function to pass previous merges.
-    return function mergedDataFn () {
-      return mergeData(
-        childVal.call(this),
-        parentVal.call(this)
-      )
-    }
-  } else if (parentVal || childVal) {
-    return function mergedInstanceDataFn () {
-      // instance merge
-      var instanceData = typeof childVal === 'function'
-        ? childVal.call(vm)
-        : childVal;
-      var defaultData = typeof parentVal === 'function'
-        ? parentVal.call(vm)
-        : undefined;
-      if (instanceData) {
-        return mergeData(instanceData, defaultData)
-      } else {
-        return defaultData
-      }
-    }
-  }
 };
 
 /**
  * Hooks and param attributes are merged as arrays.
  */
-function mergeHook (
-  parentVal,
-  childVal
+function mergeHook(
+    parentVal ,
+    childVal 
 ) {
-  return childVal
-    ? parentVal
-      ? parentVal.concat(childVal)
-      : Array.isArray(childVal)
-        ? childVal
-        : [childVal]
-    : parentVal
+    return childVal ?
+        parentVal ?
+        parentVal.concat(childVal) :
+        Array.isArray(childVal) ?
+        childVal :
+        [childVal] :
+        parentVal
 }
 
 config._lifecycleHooks.forEach(function (hook) {
-  strats[hook] = mergeHook;
+    strats[hook] = mergeHook;
 });
 
 /**
@@ -1040,15 +1040,15 @@ config._lifecycleHooks.forEach(function (hook) {
  * a three-way merge between constructor options, instance
  * options and parent options.
  */
-function mergeAssets (parentVal, childVal) {
-  var res = Object.create(parentVal || null);
-  return childVal
-    ? extend(res, childVal)
-    : res
+function mergeAssets(parentVal, childVal )  {
+    var res = Object.create(parentVal || null);
+    return childVal ?
+        extend(res, childVal) :
+        res
 }
 
-config._assetTypes.forEach(function (type) {
-  strats[type + 's'] = mergeAssets;
+config._assetTypes.forEach(function(type) {
+    strats[type + 's'] = mergeAssets;
 });
 
 /**
@@ -1057,154 +1057,156 @@ config._assetTypes.forEach(function (type) {
  * Watchers hashes should not overwrite one
  * another, so we merge them as arrays.
  */
-strats.watch = function (parentVal, childVal) {
-  /* istanbul ignore if */
-  if (!childVal) { return parentVal }
-  if (!parentVal) { return childVal }
-  var ret = {};
-  extend(ret, parentVal);
-  for (var key in childVal) {
-    var parent = ret[key];
-    var child = childVal[key];
-    if (parent && !Array.isArray(parent)) {
-      parent = [parent];
+strats.watch = function(parentVal, childVal ) {
+    /* istanbul ignore if */
+    if (!childVal) { return parentVal }
+    if (!parentVal) { return childVal }
+    var ret = {};
+    extend(ret, parentVal);
+    for (var key in childVal) {
+        var parent = ret[key];
+        var child = childVal[key];
+        if (parent && !Array.isArray(parent)) {
+            parent = [parent];
+        }
+        ret[key] = parent ?
+            parent.concat(child) :
+            [child];
     }
-    ret[key] = parent
-      ? parent.concat(child)
-      : [child];
-  }
-  return ret
+    return ret
 };
 
 /**
  * Other object hashes.
  */
 strats.props =
-strats.methods =
-strats.computed = function (parentVal, childVal) {
-  if (!childVal) { return parentVal }
-  if (!parentVal) { return childVal }
-  var ret = Object.create(null);
-  extend(ret, parentVal);
-  extend(ret, childVal);
-  return ret
-};
+    strats.methods =
+    strats.computed = function(parentVal, childVal ) {
+        if (!childVal) { return parentVal }
+        if (!parentVal) { return childVal }
+        var ret = Object.create(null);
+        extend(ret, parentVal);
+        extend(ret, childVal);
+        return ret
+    };
 
 /**
  * Default strategy.
  */
-var defaultStrat = function (parentVal, childVal) {
-  return childVal === undefined
-    ? parentVal
-    : childVal
+var defaultStrat = function(parentVal, childVal) {
+    return childVal === undefined ?
+        parentVal :
+        childVal
 };
 
 /**
  * Validate component names
  */
-function checkComponents (options) {
-  for (var key in options.components) {
-    var lower = key.toLowerCase();
-    if (isBuiltInTag(lower) || config.isReservedTag(lower)) {
-      warn(
-        'Do not use built-in or reserved HTML elements as component ' +
-        'id: ' + key
-      );
+function checkComponents(options) {
+    for (var key in options.components) {
+        var lower = key.toLowerCase();
+        if (isBuiltInTag(lower) || config.isReservedTag(lower)) {
+            warn(
+                'Do not use built-in or reserved HTML elements as component ' +
+                'id: ' + key
+            );
+        }
     }
-  }
 }
 
 /**
  * Ensure all props option syntax are normalized into the
  * Object-based format.
  */
-function normalizeProps (options) {
-  var props = options.props;
-  if (!props) { return }
-  var res = {};
-  var i, val, name;
-  if (Array.isArray(props)) {
-    i = props.length;
-    while (i--) {
-      val = props[i];
-      if (typeof val === 'string') {
-        name = camelize(val);
-        res[name] = { type: null };
-      } else {
-        warn('props must be strings when using array syntax.');
-      }
+function normalizeProps(options) {
+    var props = options.props;
+    if (!props) { return }
+    var res = {};
+    var i, val, name;
+    if (Array.isArray(props)) {
+        i = props.length;
+        while (i--) {
+            val = props[i];
+            if (typeof val === 'string') {
+                name = camelize(val);
+                res[name] = { type: null };
+            } else {
+                warn('props must be strings when using array syntax.');
+            }
+        }
+    } else if (isPlainObject(props)) {
+        for (var key in props) {
+            val = props[key];
+            name = camelize(key);
+            res[name] = isPlainObject(val) ?
+                val :
+                { type: val };
+        }
     }
-  } else if (isPlainObject(props)) {
-    for (var key in props) {
-      val = props[key];
-      name = camelize(key);
-      res[name] = isPlainObject(val)
-        ? val
-        : { type: val };
-    }
-  }
-  options.props = res;
+    options.props = res;
 }
 
 /**
  * Normalize raw function directives into object format.
  */
-function normalizeDirectives (options) {
-  var dirs = options.directives;
-  if (dirs) {
-    for (var key in dirs) {
-      var def = dirs[key];
-      if (typeof def === 'function') {
-        dirs[key] = { bind: def, update: def };
-      }
+function normalizeDirectives(options) {
+    var dirs = options.directives;
+    if (dirs) {
+        for (var key in dirs) {
+            var def = dirs[key];
+            if (typeof def === 'function') {
+                dirs[key] = { bind: def, update: def };
+            }
+        }
     }
-  }
 }
 
 /**
  * Merge two option objects into a new one.
  * Core utility used in both instantiation and inheritance.
  */
-function mergeOptions (
-  parent,
-  child,
-  vm
+function mergeOptions(
+    parent,
+    child,
+    vm  
 ) {
-  {
-    checkComponents(child);
-  }
-  normalizeProps(child);
-  normalizeDirectives(child);
-  var extendsFrom = child.extends;
-  if (extendsFrom) {
-    parent = typeof extendsFrom === 'function'
-      ? mergeOptions(parent, extendsFrom.options, vm)
-      : mergeOptions(parent, extendsFrom, vm);
-  }
-  if (child.mixins) {
-    for (var i = 0, l = child.mixins.length; i < l; i++) {
-      var mixin = child.mixins[i];
-      if (mixin.prototype instanceof Vue$2) {
-        mixin = mixin.options;
-      }
-      parent = mergeOptions(parent, mixin, vm);
+    {
+        // 检查对象中的key是否合法
+        checkComponents(child);
     }
-  }
-  var options = {};
-  var key;
-  for (key in parent) {
-    mergeField(key);
-  }
-  for (key in child) {
-    if (!hasOwn(parent, key)) {
-      mergeField(key);
+    normalizeProps(child);
+    normalizeDirectives(child);
+    var extendsFrom = child.extends;
+    if (extendsFrom) {
+        parent = typeof extendsFrom === 'function' ?
+            mergeOptions(parent, extendsFrom.options, vm) :
+            mergeOptions(parent, extendsFrom, vm);
     }
-  }
-  function mergeField (key) {
-    var strat = strats[key] || defaultStrat;
-    options[key] = strat(parent[key], child[key], vm, key);
-  }
-  return options
+    if (child.mixins) {
+        for (var i = 0, l = child.mixins.length; i < l; i++) {
+            var mixin = child.mixins[i];
+            if (mixin.prototype instanceof Vue$2) {
+                mixin = mixin.options;
+            }
+            parent = mergeOptions(parent, mixin, vm);
+        }
+    }
+    var options = {};
+    var key;
+    for (key in parent) {
+        mergeField(key);
+    }
+    for (key in child) {
+        if (!hasOwn(parent, key)) {
+            mergeField(key);
+        }
+    }
+
+    function mergeField(key) {
+        var strat = strats[key] || defaultStrat;
+        options[key] = strat(parent[key], child[key], vm, key);
+    }
+    return options
 }
 
 /**
@@ -1215,35 +1217,35 @@ function mergeOptions (
  * 因为子实例需要访问定义在原型链的资源
  *
  */
-function resolveAsset (
-  options,
-  type,
-  id,
-  warnMissing
+function resolveAsset(
+    options,
+    type,
+    id,
+    warnMissing  
 ) {
-  /* istanbul ignore if */
-  // istanbul这里应该指的是一个测试代码覆盖率的的工具
-  if (typeof id !== 'string') {
-    return
-  }
-  var assets = options[type];
-  // check local registration variations first
-  // 先在实例的assets中是否有查找的资源，根据id、camelize(id)、capitalize(id)为key查找
-  if (hasOwn(assets, id)) { return assets[id] }
-  var camelizedId = camelize(id);
-  if (hasOwn(assets, camelizedId)) { return assets[camelizedId] }
-  var PascalCaseId = capitalize(camelizedId);
-  if (hasOwn(assets, PascalCaseId)) { return assets[PascalCaseId] }
-  // fallback to prototype chain
-  // 如果实例没有找到，则去原型链查找
-  var res = assets[id] || assets[camelizedId] || assets[PascalCaseId];
-  if ("development" !== 'production' && warnMissing && !res) {
-    warn(
-      'Failed to resolve ' + type.slice(0, -1) + ': ' + id,
-      options
-    );
-  }
-  return res
+    /* istanbul ignore if */
+    // istanbul这里应该指的是一个测试代码覆盖率的的工具
+    if (typeof id !== 'string') {
+        return
+    }
+    var assets = options[type];
+        // check local registration variations first
+        // 先在实例的assets中是否有查找的资源，根据id、camelize(id)、capitalize(id)为key查找
+    if (hasOwn(assets, id)) { return assets[id] }
+    var camelizedId = camelize(id);
+    if (hasOwn(assets, camelizedId)) { return assets[camelizedId] }
+    var PascalCaseId = capitalize(camelizedId);
+    if (hasOwn(assets, PascalCaseId)) { return assets[PascalCaseId] }
+        // fallback to prototype chain
+        // 如果实例没有找到，则去原型链查找
+    var res = assets[id] || assets[camelizedId] || assets[PascalCaseId];
+    if ("development" !== 'production' && warnMissing && !res) {
+        warn(
+            'Failed to resolve ' + type.slice(0, -1) + ': ' + id,
+            options
+        );
+    }
+    return res
 }
 
 /*  */
@@ -2998,108 +3000,108 @@ var ALWAYS_NORMALIZE = 2;
 
 // wrapper function for providing a more flexible interface
 // without getting yelled at by flow
-function createElement (
-  context,
-  tag,
-  data,
-  children,
-  normalizationType,
-  alwaysNormalize
+function createElement(
+    context,
+    tag,
+    data,
+    children,
+    normalizationType,
+    alwaysNormalize
 ) {
-  // isPrimitive检查是否是字符串或数字
-  if (Array.isArray(data) || isPrimitive(data)) {
-    normalizationType = children;
-    children = data;
-    data = undefined;
-  }
-  if (alwaysNormalize) { normalizationType = ALWAYS_NORMALIZE; }
-  return _createElement(context, tag, data, children, normalizationType)
+    // isPrimitive检查data是否是字符串或数字
+    if (Array.isArray(data) || isPrimitive(data)) {
+        normalizationType = children;
+        children = data;
+        data = undefined;
+    }
+    if (alwaysNormalize) { normalizationType = ALWAYS_NORMALIZE; }
+    return _createElement(context, tag, data, children, normalizationType)
 }
 
-function _createElement (
-  context,
-  tag,
-  data,
-  children,
-  normalizationType
+function _createElement(
+    context,
+    tag  ,
+    data  ,
+    children  ,
+    normalizationType  
 ) {
-  if (data && data.__ob__) {
-    "development" !== 'production' && warn(
-      "Avoid using observed data object as vnode data: " + (JSON.stringify(data)) + "\n" +
-      'Always create fresh vnode data objects in each render!',
-      context
-    );
-    return createEmptyVNode()
-  }
-  if (!tag) {
-    // in case of component :is set to falsy value
-    return createEmptyVNode()
-  }
-  // support single function children as default scoped slot
-  if (Array.isArray(children) &&
-      typeof children[0] === 'function') {
-    data = data || {};
-    data.scopedSlots = { default: children[0] };
-    children.length = 0;
-  }
-  if (normalizationType === ALWAYS_NORMALIZE) {
-    children = normalizeChildren(children);
-  } else if (normalizationType === SIMPLE_NORMALIZE) {
-    children = simpleNormalizeChildren(children);
-  }
-  var vnode, ns;
-  if (typeof tag === 'string') {
-    var Ctor;
-    ns = config.getTagNamespace(tag);
-    // 如果tag是保留标签（非自定义标签）
-    if (config.isReservedTag(tag)) {
-      // platform built-in elements
-      // 平台内置元素
-      vnode = new VNode(
-        config.parsePlatformTagName(tag), data, children,
-        undefined, undefined, context
-      );
-    // 在context.$options的components中查找tag 
-    } else if ((Ctor = resolveAsset(context.$options, 'components', tag))) {
-      // component
-      vnode = createComponent(Ctor, data, context, children, tag);
+    if (data && data.__ob__) {
+        "development" !== 'production' && warn(
+            "Avoid using observed data object as vnode data: " + (JSON.stringify(data)) + "\n" +
+            'Always create fresh vnode data objects in each render!',
+            context
+        );
+        return createEmptyVNode()
+    }
+    if (!tag) {
+        // in case of component :is set to falsy value
+        return createEmptyVNode()
+    }
+    // support single function children as default scoped slot
+    if (Array.isArray(children) &&
+        typeof children[0] === 'function') {
+        data = data || {};
+        data.scopedSlots = { default: children[0] };
+        children.length = 0;
+    }
+    if (normalizationType === ALWAYS_NORMALIZE) {
+        children = normalizeChildren(children);
+    } else if (normalizationType === SIMPLE_NORMALIZE) {
+        children = simpleNormalizeChildren(children);
+    }
+    var vnode, ns;
+    if (typeof tag === 'string') {
+        var Ctor;
+        ns = config.getTagNamespace(tag);
+            // 如果tag是保留标签（非自定义标签）
+        if (config.isReservedTag(tag)) {
+            // platform built-in elements
+            // 平台内置元素
+            vnode = new VNode(
+                    config.parsePlatformTagName(tag), data, children,
+                    undefined, undefined, context
+                );
+                // 在context.$options的components中查找tag 
+        } else if ((Ctor = resolveAsset(context.$options, 'components', tag))) {
+            // component
+            vnode = createComponent(Ctor, data, context, children, tag);
+        } else {
+            // unknown or unlisted namespaced elements
+            // check at runtime because it may get assigned a namespace when its
+            // parent normalizes children
+            vnode = new VNode(
+                tag, data, children,
+                undefined, undefined, context
+            );
+        }
     } else {
-      // unknown or unlisted namespaced elements
-      // check at runtime because it may get assigned a namespace when its
-      // parent normalizes children
-      vnode = new VNode(
-        tag, data, children,
-        undefined, undefined, context
-      );
+        // direct component options / constructor
+        // 转为创建组件
+        vnode = createComponent(tag, data, context, children);
     }
-  } else {
-    // direct component options / constructor
-    // 转为创建组件
-    vnode = createComponent(tag, data, context, children);
-  }
-  if (vnode) {
-    // 将命名空间ns设置到没有命名空间的子元素
-    if (ns) { applyNS(vnode, ns); }
-    return vnode
-  } else {
-    return createEmptyVNode()
-  }
+    if (vnode) {
+        // 将命名空间ns递归设置到没有命名空间的子元素
+        if (ns) { applyNS(vnode, ns); }
+        return vnode
+    } else {
+        return createEmptyVNode()
+    }
 }
 
-function applyNS (vnode, ns) {
-  vnode.ns = ns;
-  if (vnode.tag === 'foreignObject') {
-    // use default namespace inside foreignObject
-    return
-  }
-  if (vnode.children) {
-    for (var i = 0, l = vnode.children.length; i < l; i++) {
-      var child = vnode.children[i];
-      if (child.tag && !child.ns) {
-        applyNS(child, ns);
-      }
+function applyNS(vnode, ns) {
+    vnode.ns = ns;
+    if (vnode.tag === 'foreignObject') {
+        // use default namespace inside foreignObject
+        return
     }
-  }
+    if (vnode.children) {
+        for (var i = 0, l = vnode.children.length; i < l; i++) {
+            var child = vnode.children[i];
+            if (child.tag && !child.ns) {
+                applyNS(child, ns);
+            }
+        }
+    }
 }
 
 /*  */
@@ -3126,7 +3128,8 @@ function initRender (vm) {
   vm.$createElement = function (a, b, c, d) { return createElement(vm, a, b, c, d, true); };
   if (vm.$options.el) {
     // @path entries/web-runtime-with-compiler
-    // 
+    //
+    // 此处的$mount在src/entries/web-runtime－with-compiler.js中定义 
     vm.$mount(vm.$options.el);
   }
 }
@@ -3163,9 +3166,8 @@ function renderMixin (Vue) {
     // render self
     var vnode;
     try {
-      // 此处render为codegen生成的函数,执行完render后vm._watcher就会出现deps,到底是哪儿绑定的呢？
-      // 肯定是render里了, 跟代码去看看
-      debugger;
+      // 此处render为codegen生成的函数,执行完render后vm._watcher的deps就会有值
+      debugger
       vnode = render.call(vm._renderProxy, vm.$createElement);
     } catch (e) {
       /* istanbul ignore else */

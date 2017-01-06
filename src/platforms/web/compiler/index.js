@@ -28,6 +28,7 @@ export function compile (
   template: string,
   options?: CompilerOptions
 ): CompiledResult {
+  // 扩展options, options.modules就是这里增加的
   options = options
     ? extend(extend({}, baseOptions), options)
     : baseOptions
