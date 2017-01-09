@@ -6175,6 +6175,7 @@ Vue$3.prototype.$mount = function (
 ) {
   debugger;
   el = el && inBrowser ? query(el) : undefined;
+  // _mount在src/core/instace/lifecycle.js中
   return this._mount(el, hydrating)
 };
 
@@ -7553,8 +7554,6 @@ function isDirectChildOfTemplateFor (node) {
 
 /*  */
 
-/* 用于生成代码字符串，目前我看到的是生成render代码 */
-
 var fnExpRE = /^\s*([\w$_]+|\([^)]*?\))\s*=>|^function\s*\(/;
 var simplePathRE = /^\s*[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\['.*?']|\[".*?"]|\[\d+]|\[[A-Za-z_$][\w$]*])*\s*$/;
 
@@ -8437,6 +8436,7 @@ function compile$$1 (
   template,
   options
 ) {
+  // 扩展options, options.modules就是这里增加的
   options = options
     ? extend(extend({}, baseOptions), options)
     : baseOptions;
@@ -8518,7 +8518,7 @@ var idToTemplate = cached(function (id) {
   return el && el.innerHTML
 });
 
-// 此处的mount在src/entries/web-runtime-with-compiler.js中定义
+// 此处的mount在src/entries/web-runtime.js中定义
 var mount = Vue$3.prototype.$mount;
 Vue$3.prototype.$mount = function (
   el,
@@ -8565,6 +8565,7 @@ Vue$3.prototype.$mount = function (
     }
     if (template) {
       debugger;
+      // src/platforms/web/compiler/index.js-->compileToFunctions
       var ref = compileToFunctions(template, {
         warn: warn,
         shouldDecodeNewlines: shouldDecodeNewlines,

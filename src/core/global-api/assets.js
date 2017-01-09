@@ -13,6 +13,12 @@ export function initAssetRegisters (Vue: GlobalAPI) {
       definition: Function | Object
     ): Function | Object | void {
       if (!definition) {
+        //
+        // 这里是将生成的component或者directive或者filter的`构造函数`保存在Vue.options里。
+        //
+        // 比如如果type是component，那么生成的构造函数VueComponent,
+        // 将保存在Vue.options.components[id]里
+        //
         return this.options[type + 's'][id]
       } else {
         /* istanbul ignore if */
@@ -31,6 +37,7 @@ export function initAssetRegisters (Vue: GlobalAPI) {
         if (type === 'directive' && typeof definition === 'function') {
           definition = { bind: definition, update: definition }
         }
+        // 将构造函数保存在Vue的options对应的key里
         this.options[type + 's'][id] = definition
         return definition
       }

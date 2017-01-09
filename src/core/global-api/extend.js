@@ -14,6 +14,8 @@ export function initExtend (Vue: GlobalAPI) {
 
   /**
    * Class inheritance
+   * 类继承－构造函数＋原型
+   * 只是生成新构造函数，并不会对Vue某些属性复制
    */
   Vue.extend = function (extendOptions: Object): Function {
     extendOptions = extendOptions || {}

@@ -6177,6 +6177,7 @@ Vue$2.prototype.$mount = function (
 ) {
   debugger;
   el = el && inBrowser ? query(el) : undefined;
+  // _mount在src/core/instace/lifecycle.js中
   return this._mount(el, hydrating)
 };
 

@@ -1848,8 +1848,6 @@ function isDirectChildOfTemplateFor (node) {
 
 /*  */
 
-/* 用于生成代码字符串，目前我看到的是生成render代码 */
-
 var fnExpRE = /^\s*([\w$_]+|\([^)]*?\))\s*=>|^function\s*\(/;
 var simplePathRE = /^\s*[A-Za-z_$][\w$]*(?:\.[A-Za-z_$][\w$]*|\['.*?']|\[".*?"]|\[\d+]|\[[A-Za-z_$][\w$]*])*\s*$/;
 
@@ -3955,6 +3953,7 @@ function arrInvoker (arr) {
 function fnInvoker (o) {
   return function (ev) {
     debugger;
+    console.log('fnInvoker, vue-template-compiler');
     var single = arguments.length === 1;
     single ? o.fn(ev) : o.fn.apply(null, arguments);
   }
@@ -5822,6 +5821,7 @@ function compile$1 (
   template,
   options
 ) {
+  // 扩展options, options.modules就是这里增加的
   options = options
     ? extend(extend({}, baseOptions), options)
     : baseOptions;

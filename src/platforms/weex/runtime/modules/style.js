@@ -10,7 +10,7 @@ function createStyle (oldVnode: VNodeWithData, vnode: VNodeWithData) {
     return
   }
   const elm = vnode.elm
-  const staticStyle = vnode.data.staticStyle
+  const staticStyle = vnode.data.
   for (const name in staticStyle) {
     if (staticStyle[name]) {
       elm.setStyle(normalize(name), staticStyle[name])
