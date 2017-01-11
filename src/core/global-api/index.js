@@ -10,6 +10,7 @@ import { set, del } from '../observer/index'
 import builtInComponents from '../components/index'
 
 export function initGlobalAPI (Vue: GlobalAPI) {
+  debugger;
   // config
   const configDef = {}
   configDef.get = () => config

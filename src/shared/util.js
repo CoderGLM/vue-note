@@ -66,7 +66,7 @@ export function hasOwn (obj: Object, key: string): boolean {
 
 /**
  * Check if value is primitive
- * 检查value是否是原始数据
+ * 检查value是否是原始数据(这里是判断了string和number)
  */
 export function isPrimitive (value: any): boolean {
   return typeof value === 'string' || typeof value === 'number'

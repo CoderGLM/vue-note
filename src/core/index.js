@@ -2,6 +2,7 @@ import Vue from './instance/index'
 import { initGlobalAPI } from './global-api/index'
 import { isServerRendering } from 'core/util/env'
 
+debugger;
 initGlobalAPI(Vue)
 
 Object.defineProperty(Vue.prototype, '$isServer', {

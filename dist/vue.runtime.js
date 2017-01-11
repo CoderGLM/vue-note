@@ -77,7 +77,7 @@ function hasOwn (obj, key) {
 
 /**
  * Check if value is primitive
- * 检查value是否是原始数据
+ * 检查value是否是原始数据(这里是判断了string和number)
  */
 function isPrimitive (value) {
   return typeof value === 'string' || typeof value === 'number'
@@ -704,7 +704,6 @@ var Observer = function Observer (value) {
  * value type is Object.
  * 遍历每个属性，将其转化为getter/setters。
  * 这个方法只有在value是对象时才被调用
- * 
  */
 Observer.prototype.walk = function walk (obj) {
   var keys = Object.keys(obj);
@@ -794,8 +793,10 @@ function defineReactive$$1 (
   var getter = property && property.get;
   var setter = property && property.set;
 
-  // childOb是针对value为对象这种情况的，因为如果val不是对象，在observer
+  // childOb是针对value为对象这种情况的，因为如果val不是对象，在observer中什么都不做。
+  // 这个observer是针对val的
   var childOb = observe(val);
+  // 这里是针对key设置或拿数据的
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
@@ -815,6 +816,7 @@ function defineReactive$$1 (
         dep.depend();
         if (childOb) {
           // 何用
+          debugger;
           childOb.dep.depend();
         }
         if (Array.isArray(value)) {
@@ -853,6 +855,7 @@ function defineReactive$$1 (
  * already exist.
  */
 function set$1 (obj, key, val) {
+  // 如果是数组，key就是index
   if (Array.isArray(obj)) {
     obj.length = Math.max(obj.length, key);
     obj.splice(key, 1, val);
@@ -3539,6 +3542,8 @@ function initExtend (Vue) {
 
   /**
    * Class inheritance
+   * 类继承－构造函数＋原型
+   * 只是生成新构造函数，并不会对Vue某些属性复制
    */
   Vue.extend = function (extendOptions) {
     extendOptions = extendOptions || {};
@@ -3605,6 +3610,12 @@ function initAssetRegisters (Vue) {
       definition
     ) {
       if (!definition) {
+        //
+        // 这里是将生成的component或者directive或者filter的`构造函数`保存在Vue.options里。
+        //
+        // 比如如果type是component，那么生成的构造函数VueComponent,
+        // 将保存在Vue.options.components[id]里
+        //
         return this.options[type + 's'][id]
       } else {
         /* istanbul ignore if */
@@ -3623,6 +3634,7 @@ function initAssetRegisters (Vue) {
         if (type === 'directive' && typeof definition === 'function') {
           definition = { bind: definition, update: definition };
         }
+        // 将构造函数保存在Vue的options对应的key里
         this.options[type + 's'][id] = definition;
         return definition
       }
@@ -3696,6 +3708,7 @@ var builtInComponents = {
 /*  */
 
 function initGlobalAPI (Vue) {
+  debugger;
   // config
   var configDef = {};
   configDef.get = function () { return config; };

@@ -75,7 +75,7 @@ function hasOwn (obj, key) {
 
 /**
  * Check if value is primitive
- * 检查value是否是原始数据
+ * 检查value是否是原始数据(这里是判断了string和number)
  */
 function isPrimitive (value) {
   return typeof value === 'string' || typeof value === 'number'
@@ -3369,7 +3369,6 @@ var Observer = function Observer (value) {
  * value type is Object.
  * 遍历每个属性，将其转化为getter/setters。
  * 这个方法只有在value是对象时才被调用
- * 
  */
 Observer.prototype.walk = function walk (obj) {
   var keys = Object.keys(obj);
@@ -3459,8 +3458,10 @@ function defineReactive$$1 (
   var getter = property && property.get;
   var setter = property && property.set;
 
-  // childOb是针对value为对象这种情况的，因为如果val不是对象，在observer
+  // childOb是针对value为对象这种情况的，因为如果val不是对象，在observer中什么都不做。
+  // 这个observer是针对val的
   var childOb = observe(val);
+  // 这里是针对key设置或拿数据的
   Object.defineProperty(obj, key, {
     enumerable: true,
     configurable: true,
@@ -3480,6 +3481,7 @@ function defineReactive$$1 (
         dep.depend();
         if (childOb) {
           // 何用
+          debugger;
           childOb.dep.depend();
         }
         if (Array.isArray(value)) {
@@ -3518,6 +3520,7 @@ function defineReactive$$1 (
  * already exist.
  */
 function set$1 (obj, key, val) {
+  // 如果是数组，key就是index
   if (Array.isArray(obj)) {
     obj.length = Math.max(obj.length, key);
     obj.splice(key, 1, val);
@@ -3953,7 +3956,6 @@ function arrInvoker (arr) {
 function fnInvoker (o) {
   return function (ev) {
     debugger;
-    console.log('fnInvoker, vue-template-compiler');
     var single = arguments.length === 1;
     single ? o.fn(ev) : o.fn.apply(null, arguments);
   }
