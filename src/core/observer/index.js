@@ -126,6 +126,7 @@ export function observe (value: any, asRootData: ?boolean): Observer | void {
     ob = new Observer(value)
   }
   if (asRootData && ob) {
+    // 绑定到此数据的vm实例数
     ob.vmCount++
   }
   return ob

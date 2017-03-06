@@ -768,6 +768,7 @@ function observe (value, asRootData) {
     ob = new Observer(value);
   }
   if (asRootData && ob) {
+    // 绑定到此数据的vm实例数
     ob.vmCount++;
   }
   return ob
@@ -901,6 +902,7 @@ function del (obj, key) {
   if (!ob) {
     return
   }
+  debugger;
   ob.dep.notify();
 }
 
@@ -2225,6 +2227,7 @@ function updateListeners (
   remove$$1,
   vm
 ) {
+  debugger;
   var name, cur, old, fn, event, capture, once;
   for (name in on) {
     cur = on[name];
@@ -3742,6 +3745,7 @@ function initGlobalAPI (Vue) {
   initAssetRegisters(Vue);
 }
 
+debugger;
 initGlobalAPI(Vue$3);
 
 Object.defineProperty(Vue$3.prototype, '$isServer', {

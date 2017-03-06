@@ -6,7 +6,7 @@ export default class VNode {
   children: ?Array<VNode>;
   text: string | void;
   elm: Node | void;
-  ns: string | void;
+  ns: string | void; // 命名空间
   context: Component | void; // rendered in this component's scope
   functionalContext: Component | void; // only for functional component root nodes
   key: string | number | void;
